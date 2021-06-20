@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Draw Detected Text</h2>
+<form action="/drawDetectedText/file-upload" enctype="multipart/form-data" method="post">
+  JPEG,PNG
+  <input type="file" name="image-input" accept="image/jpeg, image/png">
+  PDF
+  <input type="file" name="pdf-input" accept="application/pdf">
+  <br>
+  <input type="submit" value="送信する">
+</form>
+{% endblock %}

@@ -1,0 +1,19 @@
+# base image
+FROM python:3.9.5-buster
+
+# 変数定義
+ARG project_dir /var/www/flaskVision/
+
+# workdir にファイル等追加
+ADD requirements.txt $project_dir
+
+# workdir
+# なければ新規作成
+WORKDIR $project_dir
+
+#port
+EXPOSE 5000
+
+# upgrade pip
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt

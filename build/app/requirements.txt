@@ -1,0 +1,14 @@
+# webフレームワーク
+flask == 2.0.1
+# コードチェックツール
+flake8 == 3.9.2
+# 自動整形ツール
+autopep8 == 1.5.7
+# google vision api
+google-cloud-vision == 2.3.2
+# 画像処理
+Pillow == 8.2.0 
+
+
+# バージョンまで指定する場合
+# flask == 1.1.2

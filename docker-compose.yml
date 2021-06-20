@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+    app:
+        container_name: flask2
+        # Dockerfileの存在するディレクトリを指定
+        build: 
+            context: ./build/app
+            dockerfile: ./Dockerfile_dev
+            args:
+                project_dir: "/var/www/flaskVision/"
+        # ポートフォワーディング設定
+        ports: 
+            - "5000:5000"
+        # データの永続化
+        volumes:
+            - ".:/var/www/flaskVision"
+        # 環境変数の設定
+        environment:
+            TZ: Asia/Tokyo
+            FLASK_ENV: "development"
+            GOOGLE_APPLICATION_CREDENTIALS: ""
+        # 起動したままにする
+        tty: true
+        
