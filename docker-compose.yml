@@ -8,13 +8,13 @@ services:
             context: ./build/app
             dockerfile: ./Dockerfile_dev
             args:
-                project_dir: "/var/www/flaskVision/"
+                project_dir: "/var/www/ConvertImageToExcel/"
         # ポートフォワーディング設定
         ports: 
             - "5000:5000"
         # データの永続化
         volumes:
-            - ".:/var/www/flaskVision"
+            - ".:/var/www/ConvertImageToExcel"
         # 環境変数の設定
         environment:
             TZ: Asia/Tokyo
