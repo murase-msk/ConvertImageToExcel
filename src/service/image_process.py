@@ -43,22 +43,23 @@ class ImageProcess:
         image = vision.Image(content=content)
         response = client.text_detection(image=image)
         texts = response.text_annotations
-        print('Texts:')
+
+        outputList: list = []
 
         for text in texts:
-            print('\n"{}"'.format(text.description))
-
-            vertices = (['({},{})'.format(vertex.x, vertex.y)
-                        for vertex in text.bounding_poly.vertices])
-
-            print('bounds: {}'.format(','.join(vertices)))
-
+            oneText: dict = {}
+            oneText["text"] = text.description
+            oneText["p0"] = {"x": text.bounding_poly.vertices[0].x, "y": text.bounding_poly.vertices[0].y}
+            oneText["p1"] = {"x": text.bounding_poly.vertices[1].x, "y": text.bounding_poly.vertices[1].y}
+            oneText["p2"] = {"x": text.bounding_poly.vertices[2].x, "y": text.bounding_poly.vertices[2].y}
+            oneText["p3"] = {"x": text.bounding_poly.vertices[3].x, "y": text.bounding_poly.vertices[3].y}
+            outputList.append(oneText)
         if response.error.message:
             raise Exception(
                 '{}\nFor more info on error messages, check: '
                 'https://cloud.google.com/apis/design/errors'.format(
                     response.error.message))
-        return []
+        return outputList
 
     def detectDocumentText(filePath: str) -> list[any]:
         """ ドキュメントテキストの検出
@@ -142,3 +143,45 @@ class ImageProcess:
                 # (page.bounding_box.vertices[3].x, page.bounding_box.vertices[3].y)
                 # ])
         return outputlList
+
+    def detectDocumentTextV2(filePath: str) -> list[any]:
+        """ ドキュメントテキストの検出
+        """
+
+        client = vision.ImageAnnotatorClient()
+        with io.open(filePath, 'rb') as image_file:
+            content = image_file.read()
+        response = client.annotate_image({
+            'image': vision.Image(content=content),
+            'image_context': {"language_hints": ["en", "ja"]},
+            'features': [{'type_': vision.Feature.Type.DOCUMENT_TEXT_DETECTION}],
+        })
+        document = response.full_text_annotation
+        outputList: list = []
+        outputWordlList: list = []
+        outputBlockList: list = []
+        for page in document.pages:
+            blockId: int = 0
+            for block in page.blocks:
+                outputBlockList.append({"id": blockId,
+                                        "p0": {"x": block.bounding_box.vertices[0].x, "y": block.bounding_box.vertices[0].y},
+                                        "p1": {"x": block.bounding_box.vertices[1].x, "y": block.bounding_box.vertices[1].y},
+                                        "p2": {"x": block.bounding_box.vertices[2].x, "y": block.bounding_box.vertices[2].y},
+                                        "p3": {"x": block.bounding_box.vertices[3].x, "y": block.bounding_box.vertices[3].y},
+                                        "confidence": block.confidence})
+                for paragraph in block.paragraphs:
+                    for word in paragraph.words:
+                        oneWord: str = ""
+                        for symbol in word.symbols:
+                            oneWord = oneWord + symbol.text
+                        outputWordlList.append({"text": oneWord,
+                                                "p0": {"x": word.bounding_box.vertices[0].x, "y": word.bounding_box.vertices[0].y},
+                                                "p1": {"x": word.bounding_box.vertices[1].x, "y": word.bounding_box.vertices[1].y},
+                                                "p2": {"x": word.bounding_box.vertices[2].x, "y": word.bounding_box.vertices[2].y},
+                                                "p3": {"x": word.bounding_box.vertices[3].x, "y": word.bounding_box.vertices[3].y},
+                                                "blockId": blockId,
+                                                "confidence": word.confidence
+                                                })
+                blockId = blockId + 1
+        outputList.append({"blocks": outputBlockList, "words": outputWordlList})
+        return outputList

@@ -6,6 +6,7 @@ from flask import request
 from flask import send_file
 from PIL import Image
 from PIL import ImageDraw
+from service.excel_process import ExcelProcess
 from src.service.image_process import ImageProcess
 # from flask import current_app
 
@@ -13,8 +14,28 @@ from src.service.image_process import ImageProcess
 class ImageAnalysisController(MethodView):
     """ 画像分析コントローラー
     """
-    def analysisAction():
-        """visionAPIで分析
+
+    def analysisDocumentAction():
+        """ テキスト分析
+        """
+        imgFile = request.files['image-input']
+        imgName = imgFile.filename
+        imgFile.save(os.path.join("secret/tmpImage/", imgName))
+        imageProcess: ImageProcess = ImageProcess
+        # 画像データをGoogleVisionAPIのdetectDocumentで解析
+        analysisDocumentList: list[any] = imageProcess.detectDocumentTextV2("secret/tmpImage/" + imgName)
+        # Excelに入るように位置調整する
+        # TODO
+        # 一番小さい文字の高さを1セルの高さに設定
+        # 1セルの高さが決まったらそれに応じてセルに割り当てる
+        # 文字の中心がどのセルに入るか割り当てる
+
+        # Excelへ出力
+        excelProcess: ExcelProcess = ExcelProcess
+        return excelProcess.getResponse
+
+    def getLabelAction():
+        """visionAPIでラベルを取得
         """
         # ファイルがアップロードされているか
         inputTypeFileName: str = 'image-input'
@@ -29,36 +50,42 @@ class ImageAnalysisController(MethodView):
             return jsonify({'result': 'filename must not empty.'})
 
         # ファイル保存
-        imgFile.save(os.path.join("secret/", imgName))
+        imgFile.save(os.path.join("secret/tmpImage/", imgName))
 
         # 画像からラベル取得
         imageProcess = ImageProcess
-        labelList: list[str] = imageProcess.getLabels("secret/" + imgName)
-        # 画像からテキスト認識
-        # labelList: list[any] = []
-        # imageProcess.detectText("secret/" + imgName)
-        # labelList = imageProcess.detectDocumentText("secret/" + imgName)
+        labelList: list[str] = imageProcess.getLabels("secret/tmpImage/" + imgName)
 
         # JSONを返す
         return jsonify({'response': labelList})
         # テンプレートをレンダリング
         # return render_template('imageAnalysis.html', title='Image Analysis Result')
-        # 画像をダウンロードさせる
-        # return send_file('secret/' + imgName, attachment_filename=imgName, as_attachment=True, mimetype='image/jpeg')
 
-    def drawDetectTextaction():
+    def detectTextAction():
+        """ テキストを検出する
+        """
+        imgFile = request.files['image-input']
+        imgName = imgFile.filename
+        imgFile.save(os.path.join("secret/tmpImage/", imgName))
+        imageProcess: ImageProcess = ImageProcess
+        # 画像からテキスト認識
+        textList: list[any] = []
+        textList = imageProcess.detectText("secret/tmpImage/" + imgName)
+        return jsonify({'response': textList})
+
+    def drawDetectTextAction():
         """ 認識した範囲を描画して画像を返す
         """
         imgFile = request.files['image-input']
         imgName = imgFile.filename
-        imgFile.save(os.path.join("secret/", imgName))
+        imgFile.save(os.path.join("secret/tmpImage/", imgName))
         imageProcess: ImageProcess = ImageProcess
-        drawList: list[any] = imageProcess.detectDocumentText("secret/" + imgName)
+        drawList: list[any] = imageProcess.detectDocumentText("secret/tmpImage/" + imgName)
 
         # 画像に描画する
-        img = Image.open("secret/" + imgName)
+        img = Image.open("secret/tmpImage/" + imgName)
         d = ImageDraw.Draw(img)
         for one in drawList:
             d.rectangle(one, outline='green', width=3)
-        img.save('secret/convert.jpg', quality=95)
-        return send_file('secret/convert.jpg', attachment_filename=imgName, as_attachment=True, mimetype='image/jpeg')
+        img.save('secret/tmpImage/convert.jpg', quality=95)
+        return send_file('secret/tmpImage/convert.jpg', attachment_filename=imgName, as_attachment=True, mimetype='image/jpeg')

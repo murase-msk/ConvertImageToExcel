@@ -14,4 +14,10 @@ class IndexController(MethodView):
         return render_template('index.html', title='Convert PDF to Excel')
 
     def drawDetectedTextPageAction():
-        return render_template('drawDetectedTextPage.html', title='Convert PDF to Excel')
+        return render_template('drawDetectedTextPage.html', title='Draw Detected Text')
+
+    def getLabelPageAction():
+        return render_template('getLabelPage.html', title='Get Label')
+
+    def detectTextPageAction():
+        return render_template('detectTextPage.html', title='Detect Text')
