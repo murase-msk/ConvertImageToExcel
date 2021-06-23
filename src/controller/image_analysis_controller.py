@@ -1,4 +1,5 @@
 import os
+from typing import Dict, List
 from flask.json import jsonify
 from flask.views import MethodView
 # from flask import render_template
@@ -6,8 +7,8 @@ from flask import request
 from flask import send_file
 from PIL import Image
 from PIL import ImageDraw
-from service.excel_process import ExcelProcess
-from src.service.image_process import ImageProcess
+from src.service.excel_process import ExcelData, ExcelProcess
+from src.service.image_process import Block, ImageProcess, Word
 # from flask import current_app
 
 
@@ -23,16 +24,17 @@ class ImageAnalysisController(MethodView):
         imgFile.save(os.path.join("secret/tmpImage/", imgName))
         imageProcess: ImageProcess = ImageProcess
         # 画像データをGoogleVisionAPIのdetectDocumentで解析
-        analysisDocumentList: list[any] = imageProcess.detectDocumentTextV2("secret/tmpImage/" + imgName)
+        analysisDocumentList: Dict[List[Block], List[Word]] = imageProcess.detectDocumentTextV2("secret/tmpImage/" + imgName)
+        # {"blocks":[{"text":???, "p0":{"x":?,"y":?}, "p1":???, "p2":???, "p3":???, "confidence":???}, ... ], "words":[{...}]}
+        excelProcess: ExcelProcess = ExcelProcess()
         # Excelに入るように位置調整する
-        # TODO
         # 一番小さい文字の高さを1セルの高さに設定
         # 1セルの高さが決まったらそれに応じてセルに割り当てる
         # 文字の中心がどのセルに入るか割り当てる
-
+        outputExcelData: List[ExcelData] = excelProcess.mappingFromPixelCoordinatesToExcelCoordinates(analysisDocumentList["words"])
+        excelProcess.writeExcel(outputExcelData)
         # Excelへ出力
-        excelProcess: ExcelProcess = ExcelProcess
-        return excelProcess.getResponse
+        return excelProcess.getResponse()
 
     def getLabelAction():
         """visionAPIでラベルを取得

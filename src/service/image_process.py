@@ -1,6 +1,25 @@
-import os
 import io
+import os
+from dataclasses import dataclass
+from typing import Dict, List
 from google.cloud import vision
+from sympy import Polygon
+
+
+@dataclass(frozen=True)
+class Block:
+    text: str
+    id: int
+    confidence: float
+    poly: Polygon
+
+
+@dataclass(frozen=True)
+class Word:
+    text: str
+    blockId: int
+    confidence: float
+    poly: Polygon
 
 
 class ImageProcess:
@@ -89,7 +108,7 @@ class ImageProcess:
         # TYPE_UNSPECIFIED = 0
         # WEB_DETECTION = 10
         document = response.full_text_annotation
-        outputlList: list = []
+        outputlList: List = []
         for page in document.pages:
             for block in page.blocks:
                 for paragraph in block.paragraphs:
@@ -144,7 +163,7 @@ class ImageProcess:
                 # ])
         return outputlList
 
-    def detectDocumentTextV2(filePath: str) -> list[any]:
+    def detectDocumentTextV2(filePath: str) -> Dict[List[Word], List[Block]]:
         """ ドキュメントテキストの検出
         """
 
@@ -157,31 +176,45 @@ class ImageProcess:
             'features': [{'type_': vision.Feature.Type.DOCUMENT_TEXT_DETECTION}],
         })
         document = response.full_text_annotation
-        outputList: list = []
-        outputWordlList: list = []
-        outputBlockList: list = []
+        outputWordlList: List[Word] = []
+        outputBlockList: List[Block] = []
         for page in document.pages:
             blockId: int = 0
             for block in page.blocks:
-                outputBlockList.append({"id": blockId,
-                                        "p0": {"x": block.bounding_box.vertices[0].x, "y": block.bounding_box.vertices[0].y},
-                                        "p1": {"x": block.bounding_box.vertices[1].x, "y": block.bounding_box.vertices[1].y},
-                                        "p2": {"x": block.bounding_box.vertices[2].x, "y": block.bounding_box.vertices[2].y},
-                                        "p3": {"x": block.bounding_box.vertices[3].x, "y": block.bounding_box.vertices[3].y},
-                                        "confidence": block.confidence})
+                oneBlock: str = ""
                 for paragraph in block.paragraphs:
                     for word in paragraph.words:
                         oneWord: str = ""
                         for symbol in word.symbols:
                             oneWord = oneWord + symbol.text
-                        outputWordlList.append({"text": oneWord,
-                                                "p0": {"x": word.bounding_box.vertices[0].x, "y": word.bounding_box.vertices[0].y},
-                                                "p1": {"x": word.bounding_box.vertices[1].x, "y": word.bounding_box.vertices[1].y},
-                                                "p2": {"x": word.bounding_box.vertices[2].x, "y": word.bounding_box.vertices[2].y},
-                                                "p3": {"x": word.bounding_box.vertices[3].x, "y": word.bounding_box.vertices[3].y},
-                                                "blockId": blockId,
-                                                "confidence": word.confidence
-                                                })
+                            oneBlock = oneBlock + symbol.text
+                        outputWordlList.append(
+                            Word(
+                                text=oneWord,
+                                blockId=blockId,
+                                confidence=word.confidence,
+                                poly=Polygon(
+                                    (word.bounding_box.vertices[0].x, word.bounding_box.vertices[0].y),
+                                    (word.bounding_box.vertices[1].x, word.bounding_box.vertices[1].y),
+                                    (word.bounding_box.vertices[2].x, word.bounding_box.vertices[2].y),
+                                    (word.bounding_box.vertices[3].x, word.bounding_box.vertices[3].y)
+                                )
+                            )
+                        )
                 blockId = blockId + 1
-        outputList.append({"blocks": outputBlockList, "words": outputWordlList})
-        return outputList
+                outputBlockList.append(
+                    Block(
+                        text=oneBlock,
+                        id=blockId,
+                        confidence=block.confidence,
+                        poly=Polygon(
+                            (block.bounding_box.vertices[0].x, block.bounding_box.vertices[0].y),
+                            (block.bounding_box.vertices[1].x, block.bounding_box.vertices[1].y),
+                            (block.bounding_box.vertices[2].x, block.bounding_box.vertices[2].y),
+                            (block.bounding_box.vertices[3].x, block.bounding_box.vertices[3].y)
+                        )
+                    )
+                )
+
+        # outputList.append({"blocks": outputBlockList, "words": outputWordlList})
+        return {"blocks": outputBlockList, "words": outputWordlList}
