@@ -22,7 +22,7 @@ class ImageAnalysisController(MethodView):
         imgFile = request.files['image-input']
         imgName = imgFile.filename
         imgFile.save(os.path.join("secret/tmpImage/", imgName))
-        imageProcess: ImageProcess = ImageProcess
+        imageProcess: ImageProcess = ImageProcess()
         # 画像データをGoogleVisionAPIのdetectDocumentで解析
         analysisDocumentList: Dict[List[Block], List[Word]] = imageProcess.detectDocumentTextV2("secret/tmpImage/" + imgName)
         # {"blocks":[{"text":???, "p0":{"x":?,"y":?}, "p1":???, "p2":???, "p3":???, "confidence":???}, ... ], "words":[{...}]}
@@ -31,6 +31,22 @@ class ImageAnalysisController(MethodView):
         # 一番小さい文字の高さを1セルの高さに設定
         # 1セルの高さが決まったらそれに応じてセルに割り当てる
         # 文字の中心がどのセルに入るか割り当てる
+        outputExcelData: List[ExcelData] = excelProcess.mappingFromPixelCoordinatesToExcelCoordinates(analysisDocumentList["words"])
+        excelProcess.writeExcel(outputExcelData)
+        # Excelへ出力
+        return excelProcess.getResponse()
+
+    def analysisPdfDocumentAction():
+        """ テキスト分析(PDF)
+        """
+        imgFile = request.files['pdf-input']
+        imgName = imgFile.filename
+        imgFile.save(os.path.join("secret/tmpImage/", imgName))
+        imageProcess: ImageProcess = ImageProcess()
+        # 画像データをGoogleVisionAPIのdetectDocumentで解析
+        analysisDocumentList: Dict[List[Block], List[Word]] = imageProcess.detectDocumentTextForPdf("secret/tmpImage/" + imgName)
+        excelProcess: ExcelProcess = ExcelProcess()
+        # Excelに入るように位置調整する
         outputExcelData: List[ExcelData] = excelProcess.mappingFromPixelCoordinatesToExcelCoordinates(analysisDocumentList["words"])
         excelProcess.writeExcel(outputExcelData)
         # Excelへ出力
@@ -55,7 +71,7 @@ class ImageAnalysisController(MethodView):
         imgFile.save(os.path.join("secret/tmpImage/", imgName))
 
         # 画像からラベル取得
-        imageProcess = ImageProcess
+        imageProcess = ImageProcess()
         labelList: list[str] = imageProcess.getLabels("secret/tmpImage/" + imgName)
 
         # JSONを返す
@@ -69,7 +85,7 @@ class ImageAnalysisController(MethodView):
         imgFile = request.files['image-input']
         imgName = imgFile.filename
         imgFile.save(os.path.join("secret/tmpImage/", imgName))
-        imageProcess: ImageProcess = ImageProcess
+        imageProcess: ImageProcess = ImageProcess()
         # 画像からテキスト認識
         textList: list[any] = []
         textList = imageProcess.detectText("secret/tmpImage/" + imgName)
@@ -81,7 +97,7 @@ class ImageAnalysisController(MethodView):
         imgFile = request.files['image-input']
         imgName = imgFile.filename
         imgFile.save(os.path.join("secret/tmpImage/", imgName))
-        imageProcess: ImageProcess = ImageProcess
+        imageProcess: ImageProcess = ImageProcess()
         drawList: list[any] = imageProcess.detectDocumentText("secret/tmpImage/" + imgName)
 
         # 画像に描画する

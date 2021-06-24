@@ -26,9 +26,10 @@ class ImageProcess:
     """ google vision apiを使った画像処理関係
     """
 
-    # def __init__(self):
+    def __init__(self):
+        return
 
-    def getLabels(filePath: str) -> list[str]:
+    def getLabels(self, filePath: str) -> list[str]:
         """ 保存された画像のファイルパス(filePath)からラベルを取得
         """
         #
@@ -52,7 +53,7 @@ class ImageProcess:
 
         return labelList
 
-    def detectText(filePath: str) -> list[str]:
+    def detectText(self, filePath: str) -> list[str]:
         """ファイルパスからテキスト情報を取得する
         """
 
@@ -80,7 +81,7 @@ class ImageProcess:
                     response.error.message))
         return outputList
 
-    def detectDocumentText(filePath: str) -> list[any]:
+    def detectDocumentText(self, filePath: str) -> list[any]:
         """ ドキュメントテキストの検出
         """
 
@@ -163,22 +164,50 @@ class ImageProcess:
                 # ])
         return outputlList
 
-    def detectDocumentTextV2(filePath: str) -> Dict[List[Word], List[Block]]:
+    def detectDocumentTextV2(self, filePath: str) -> Dict[List[Word], List[Block]]:
         """ ドキュメントテキストの検出
         """
-
         client = vision.ImageAnnotatorClient()
         with io.open(filePath, 'rb') as image_file:
             content = image_file.read()
+
         response = client.annotate_image({
             'image': vision.Image(content=content),
             'image_context': {"language_hints": ["en", "ja"]},
-            'features': [{'type_': vision.Feature.Type.DOCUMENT_TEXT_DETECTION}],
+            'features': [{'type_': vision.Feature.Type.DOCUMENT_TEXT_DETECTION}]
         })
-        document = response.full_text_annotation
+        # outputList.append({"blocks": outputBlockList, "words": outputWordlList})
+        return self.__getDocumentData(response.full_text_annotation)
+
+    def detectDocumentTextForPdf(self, filePath: str):
+        """ ドキュメントテキストの検出(PDF)
+        """
+        client = vision.ImageAnnotatorClient()
+        with io.open(filePath, 'rb') as image_file:
+            binary_content = image_file.read()
+        req = vision.AnnotateFileRequest(
+            # バイナリファイルの指定
+            input_config=vision.InputConfig(content=binary_content, mime_type='application/pdf'),
+            # 検出したい特徴の指定
+            features=[vision.Feature(type_=vision.Feature.Type.DOCUMENT_TEXT_DETECTION)],
+            # 言語ヒント
+            image_context=vision.ImageContext(language_hints=["en", "ja"]),
+            # 検出対象ページの指定
+            pages=[1, 2]  # 同期の場合、5ページ以上指定不可
+        )
+        # batch_annotate_files呼び出し。リクエストがリストであることに注意。
+        batch_response = client.batch_annotate_files(requests=[req])
+        document = batch_response.responses[0].responses[0].full_text_annotation
+        return self.__getPdfDocumentData(document)
+
+    def __getDocumentData(self, full_text_annotation) -> Dict[List[Word], List[Block]]:
+        """
+        full_text_annotationを解析してPythonで扱えるデータで返す(image)
+        @ param full_text_annotation
+        """
         outputWordlList: List[Word] = []
         outputBlockList: List[Block] = []
-        for page in document.pages:
+        for page in full_text_annotation.pages:
             blockId: int = 0
             for block in page.blocks:
                 oneBlock: str = ""
@@ -215,6 +244,50 @@ class ImageProcess:
                         )
                     )
                 )
+        return {"blocks": outputBlockList, "words": outputWordlList}
 
-        # outputList.append({"blocks": outputBlockList, "words": outputWordlList})
+    def __getPdfDocumentData(self, full_text_annotation) -> Dict[List[Word], List[Block]]:
+        """
+        full_text_annotationを解析してPythonで扱えるデータで返す(PDF)
+        @ param full_text_annotation
+        """
+        outputWordlList: List[Word] = []
+        outputBlockList: List[Block] = []
+        for page in full_text_annotation.pages:
+            blockId: int = 0
+            for block in page.blocks:
+                oneBlock: str = ""
+                for paragraph in block.paragraphs:
+                    for word in paragraph.words:
+                        oneWord: str = ""
+                        for symbol in word.symbols:
+                            oneWord = oneWord + symbol.text
+                            oneBlock = oneBlock + symbol.text
+                        outputWordlList.append(
+                            Word(
+                                text=oneWord,
+                                blockId=blockId,
+                                confidence=word.confidence,
+                                poly=Polygon(
+                                    (word.bounding_box.normalized_vertices[0].x, word.bounding_box.normalized_vertices[0].y),
+                                    (word.bounding_box.normalized_vertices[1].x, word.bounding_box.normalized_vertices[1].y),
+                                    (word.bounding_box.normalized_vertices[2].x, word.bounding_box.normalized_vertices[2].y),
+                                    (word.bounding_box.normalized_vertices[3].x, word.bounding_box.normalized_vertices[3].y)
+                                )
+                            )
+                        )
+                blockId = blockId + 1
+                outputBlockList.append(
+                    Block(
+                        text=oneBlock,
+                        id=blockId,
+                        confidence=block.confidence,
+                        poly=Polygon(
+                            (block.bounding_box.normalized_vertices[0].x, block.bounding_box.normalized_vertices[0].y),
+                            (block.bounding_box.normalized_vertices[1].x, block.bounding_box.normalized_vertices[1].y),
+                            (block.bounding_box.normalized_vertices[2].x, block.bounding_box.normalized_vertices[2].y),
+                            (block.bounding_box.normalized_vertices[3].x, block.bounding_box.normalized_vertices[3].y)
+                        )
+                    )
+                )
         return {"blocks": outputBlockList, "words": outputWordlList}

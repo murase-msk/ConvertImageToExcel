@@ -20,6 +20,7 @@ app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
 
 app.add_url_rule('/', view_func=IndexController.indexAction, methods=['GET'])
 app.add_url_rule('/file-upload', view_func=ImageAnalysisController.analysisDocumentAction, methods=['POST'])
+app.add_url_rule('/file-upload-pdf', view_func=ImageAnalysisController.analysisPdfDocumentAction, methods=['POST'])
 
 app.add_url_rule('/drawDetectedText', view_func=IndexController.drawDetectedTextPageAction, methods=['GET'])
 app.add_url_rule('/drawDetectedText/file-upload', view_func=ImageAnalysisController.drawDetectTextAction, methods=['POST'])

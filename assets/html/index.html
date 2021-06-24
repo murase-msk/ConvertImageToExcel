@@ -1,12 +1,20 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Convert PDF to Excel</h2>
+<h2>Convert Image to Excel</h2>
 <form action="/file-upload" enctype="multipart/form-data" method="post">
   JPEG,PNG
   <input type="file" name="image-input" accept="image/jpeg, image/png">
+  <br>
+  <input type="submit" value="送信する">
+</form>
+
+<br>
+
+<form action="/file-upload-pdf" enctype="multipart/form-data" method="post">
   PDF
   <input type="file" name="pdf-input" accept="application/pdf">
   <br>
   <input type="submit" value="送信する">
 </form>
+
 {% endblock %}
