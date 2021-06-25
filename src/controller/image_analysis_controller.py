@@ -2,7 +2,7 @@ import os
 from typing import Dict, List
 from flask.json import jsonify
 from flask.views import MethodView
-# from flask import render_template
+from flask import render_template
 from flask import request
 from flask import send_file
 from PIL import Image
@@ -10,6 +10,7 @@ from PIL import ImageDraw
 from src.service.excel_process import ExcelData, ExcelProcess
 from src.service.image_process import Block, ImageProcess, Word
 # from flask import current_app
+import pdf2image
 
 
 class ImageAnalysisController(MethodView):
@@ -107,3 +108,20 @@ class ImageAnalysisController(MethodView):
             d.rectangle(one, outline='green', width=3)
         img.save('secret/tmpImage/convert.jpg', quality=95)
         return send_file('secret/tmpImage/convert.jpg', attachment_filename=imgName, as_attachment=True, mimetype='image/jpeg')
+
+    def convertPdfToImgAction():
+        """ PDFをJPEG変換し表示する
+        """
+        imgFile = request.files['pdf-input']
+        # imgName = imgFile.filename
+        # imgFile.save(os.path.join("secret/tmpImage/", imgName))
+        images = pdf2image.convert_from_bytes(imgFile.read())
+        convertedFilePath: str = "assets/img/tmp/test.png"
+        images[0].save(convertedFilePath)
+
+        return render_template('getImagePositionResultPage.html', title='Image Analysis Result', imagePath="/" + convertedFilePath)
+
+    def textDetectApiV1Action():
+        """ BASE64エンコードされたPDFファイルと検出したい文字範囲を受け取って文字認識して返す
+        """
+        return

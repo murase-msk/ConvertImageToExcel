@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Get Image Position</h2>
+
+<form action="/getImagePosition/file-upload" enctype="multipart/form-data" method="post">
+  PDF
+  <input type="file" name="pdf-input" accept="application/pdf">
+  <br>
+  <input type="submit" value="送信する">
+</form>
+
+{% endblock %}

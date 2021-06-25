@@ -31,6 +31,12 @@ app.add_url_rule('/getLabel/file-upload', view_func=ImageAnalysisController.getL
 app.add_url_rule('/detectText', view_func=IndexController.detectTextPageAction, methods=['GET'])
 app.add_url_rule('/detectText/file-upload', view_func=ImageAnalysisController.detectTextAction, methods=['POST'])
 
+app.add_url_rule('/getImagePosition', view_func=IndexController.getImagePositionPageAction, methods=['GET'])
+app.add_url_rule('/getImagePosition/file-upload', view_func=ImageAnalysisController.convertPdfToImgAction, methods=['POST'])
+
+app.add_url_rule('/textDetectApi', view_func=IndexController.textDetectApiPageAction, methods=['GET'])
+app.add_url_rule('/textDetectApi/v1', view_func=ImageAnalysisController.textDetectApiV1Action, methods=['GET'])
+
 app.add_url_rule('/user/<user_id>', view_func=UserController.userAction, methods=['GET'])
 app.add_url_rule('/user/config', view_func=UserController.configAction, methods=['GET'])
 

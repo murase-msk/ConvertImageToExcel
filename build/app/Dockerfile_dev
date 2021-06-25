@@ -14,6 +14,11 @@ WORKDIR $project_dir
 #port
 EXPOSE 5000
 
+
+RUN apt-get update
 # upgrade pip
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
+# PDF image 変換
+RUN apt-get install -y poppler-utils
+

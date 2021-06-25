@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Get Image Position Result</h2>
+
+x:<span id="xPosition"></span><br>
+y:<span id="yPosition"></span><br>
+x(normalize):<span id="xPositionNormalize"></span><br>
+y(normalize):<span id="yPositionNormalize"></span><br>
+p0:(<span id="point0X"></span>,<span id="point0Y"></span>)<br>
+p3:(<span id="point3X"></span>,<span id="point3Y"></span>)<br>
+p0(normalize):(<span id="point0XNormalize"></span>,<span id="point0YNormalize"></span>)<br>
+p3(normalize):(<span id="point3XNormalize"></span>,<span id="point3YNormalize"></span>)<br>
+<br>
+
+<!-- <img id="convertedImage" src={{ imagePath }}> -->
+<input type=hidden name="imagePath" value={{ imagePath }}>
+<canvas id="canvasArea" height="100" width="100"></canvas>
+
+<script type="text/javascript" src="/assets/js/getImagePosition.js"></script>
+{% endblock %}

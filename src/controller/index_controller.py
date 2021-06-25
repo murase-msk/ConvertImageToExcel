@@ -21,3 +21,9 @@ class IndexController(MethodView):
 
     def detectTextPageAction():
         return render_template('detectTextPage.html', title='Detect Text')
+
+    def getImagePositionPageAction():
+        return render_template('getImagePositionPage.html', title='Get Image Position')
+
+    def textDetectApiPageAction():
+        return render_template('textDetectApiPage.html', title='Detect Text API')

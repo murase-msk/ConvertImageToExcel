@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>PDF Base64 Upload return JSON</h2>
+PDF
+<input type="file" name="pdf-input" accept="application/pdf">
+<br>
+<input type="button" id="uploadBase64" value="送信する">
+
+<script type="text/javascript">
+  //ボタンを押したらAjaxでデータを送る
+  document.getElementById('uploadBase64').addEventListener("click", function () {
+    console.log("click button")
+  })
+</script>
+
+{% endblock %}
