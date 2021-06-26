@@ -1,4 +1,3 @@
-import os
 from typing import Dict, List
 from flask.json import jsonify
 from flask.views import MethodView
@@ -11,6 +10,8 @@ from src.service.excel_process import ExcelData, ExcelProcess
 from src.service.image_process import Block, ImageProcess, Word
 # from flask import current_app
 import pdf2image
+import base64
+import json
 
 
 class ImageAnalysisController(MethodView):
@@ -21,12 +22,12 @@ class ImageAnalysisController(MethodView):
         """ テキスト分析
         """
         imgFile = request.files['image-input']
-        imgName = imgFile.filename
-        imgFile.save(os.path.join("secret/tmpImage/", imgName))
+        # imgName = imgFile.filename
+        # imgFile.save(os.path.join("secret/tmpImage/", imgName))
         imageProcess: ImageProcess = ImageProcess()
         # 画像データをGoogleVisionAPIのdetectDocumentで解析
-        analysisDocumentList: Dict[List[Block], List[Word]] = imageProcess.detectDocumentTextV2("secret/tmpImage/" + imgName)
-        # {"blocks":[{"text":???, "p0":{"x":?,"y":?}, "p1":???, "p2":???, "p3":???, "confidence":???}, ... ], "words":[{...}]}
+        analysisDocumentList: Dict[List[Block], List[Word]] = imageProcess.detectDocumentTextV2ForImage(imgFile.read())
+        # analysisDocumentList = {"blocks":[{"text":???, "p0":{"x":?,"y":?}, "p1":???, "p2":???, "p3":???, "confidence":???}, ... ], "words":[{...}]}
         excelProcess: ExcelProcess = ExcelProcess()
         # Excelに入るように位置調整する
         # 一番小さい文字の高さを1セルの高さに設定
@@ -41,11 +42,11 @@ class ImageAnalysisController(MethodView):
         """ テキスト分析(PDF)
         """
         imgFile = request.files['pdf-input']
-        imgName = imgFile.filename
-        imgFile.save(os.path.join("secret/tmpImage/", imgName))
+        # imgName = imgFile.filename
+        # imgFile.save(os.path.join("secret/tmpImage/", imgName))
         imageProcess: ImageProcess = ImageProcess()
         # 画像データをGoogleVisionAPIのdetectDocumentで解析
-        analysisDocumentList: Dict[List[Block], List[Word]] = imageProcess.detectDocumentTextForPdf("secret/tmpImage/" + imgName)
+        analysisDocumentList: Dict[List[Block], List[Word]] = imageProcess.detectDocumentTextForPdf(imgFile.read())
         excelProcess: ExcelProcess = ExcelProcess()
         # Excelに入るように位置調整する
         outputExcelData: List[ExcelData] = excelProcess.mappingFromPixelCoordinatesToExcelCoordinates(analysisDocumentList["words"])
@@ -69,11 +70,11 @@ class ImageAnalysisController(MethodView):
             return jsonify({'result': 'filename must not empty.'})
 
         # ファイル保存
-        imgFile.save(os.path.join("secret/tmpImage/", imgName))
+        # imgFile.save(os.path.join("secret/tmpImage/", imgName))
 
         # 画像からラベル取得
         imageProcess = ImageProcess()
-        labelList: list[str] = imageProcess.getLabels("secret/tmpImage/" + imgName)
+        labelList: list[str] = imageProcess.getLabels(imgFile.read())
 
         # JSONを返す
         return jsonify({'response': labelList})
@@ -84,12 +85,12 @@ class ImageAnalysisController(MethodView):
         """ テキストを検出する
         """
         imgFile = request.files['image-input']
-        imgName = imgFile.filename
-        imgFile.save(os.path.join("secret/tmpImage/", imgName))
+        # imgName = imgFile.filename
+        # imgFile.save(os.path.join("secret/tmpImage/", imgName))
         imageProcess: ImageProcess = ImageProcess()
         # 画像からテキスト認識
         textList: list[any] = []
-        textList = imageProcess.detectText("secret/tmpImage/" + imgName)
+        textList = imageProcess.detectText(imgFile.read())
         return jsonify({'response': textList})
 
     def drawDetectTextAction():
@@ -97,17 +98,20 @@ class ImageAnalysisController(MethodView):
         """
         imgFile = request.files['image-input']
         imgName = imgFile.filename
-        imgFile.save(os.path.join("secret/tmpImage/", imgName))
+        # imgFile.save(os.path.join("secret/tmpImage/", imgName))
         imageProcess: ImageProcess = ImageProcess()
-        drawList: list[any] = imageProcess.detectDocumentText("secret/tmpImage/" + imgName)
+        drawList: list[any] = imageProcess.detectDocumentText(imgFile.read())
 
         # 画像に描画する
-        img = Image.open("secret/tmpImage/" + imgName)
+        # img = Image.open("secret/tmpImage/" + imgName)
+        img = Image.open(imgFile)
         d = ImageDraw.Draw(img)
         for one in drawList:
             d.rectangle(one, outline='green', width=3)
         img.save('secret/tmpImage/convert.jpg', quality=95)
         return send_file('secret/tmpImage/convert.jpg', attachment_filename=imgName, as_attachment=True, mimetype='image/jpeg')
+
+        # return send_file(img.read(), attachment_filename=imgName, as_attachment=True, mimetype='image/jpeg')
 
     def convertPdfToImgAction():
         """ PDFをJPEG変換し表示する
@@ -124,4 +128,28 @@ class ImageAnalysisController(MethodView):
     def textDetectApiV1Action():
         """ BASE64エンコードされたPDFファイルと検出したい文字範囲を受け取って文字認識して返す
         """
-        return
+        jsonData = request.get_json()
+        # テキスト取得範囲を取得する
+        searchAreaText = jsonData['textDetectArea']
+        searchArea = json.loads(searchAreaText)
+        print(searchArea[0]["x0"])
+
+        # base64エンコードされたデータをデコードする
+        pdfAllBinary = base64.b64decode(jsonData['uploadBase64'])
+        pdfStrConvert = str(pdfAllBinary)
+        # PDFファイルでなければ終了
+        if "b'data:application/pdf;base64," not in pdfStrConvert:
+            return ""
+        # ヘッダー削除
+        deletedHeaderPdf = pdfStrConvert.replace("b'data:application/pdf;base64,", '').replace("EOF'", 'EOF')
+        # バイト変換
+        pdfBinaryReConverted = bytes(deletedHeaderPdf, encoding="utf-8")
+        # ヘッダーを取り除いたところで再度base64デコード
+        binaryPdf: bytes = base64.b64decode(pdfBinaryReConverted)
+
+        imageProcess: ImageProcess = ImageProcess()
+        # 画像データをGoogleVisionAPIのdetectDocumentで解析
+        analysisDocumentList: Dict[List[Block], List[Word]] = imageProcess.detectDocumentTextForPdf(binaryPdf)
+        return ""
+        # 配列へ変換
+        # return

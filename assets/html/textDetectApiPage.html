@@ -3,14 +3,55 @@
 
 <h2>PDF Base64 Upload return JSON</h2>
 PDF
-<input type="file" name="pdf-input" accept="application/pdf">
+<input type="file" id="pdf-input-id" name="pdf-input" accept="application/pdf">
+<br>
+テキスト取得範囲
+<br>
+<textarea id="searchArea" cols="100"
+  rows="5">[{"x0":1, "y0":1, "x3":1, "y3":1}, {"x0":1, "y0":1, "x3":1, "y3":1}]</textarea>
 <br>
 <input type="button" id="uploadBase64" value="送信する">
+
+<div id=res></div>
 
 <script type="text/javascript">
   //ボタンを押したらAjaxでデータを送る
   document.getElementById('uploadBase64').addEventListener("click", function () {
     console.log("click button")
+    let pdfElement = document.getElementById("pdf-input-id")
+    let file = pdfElement.files[0]
+    let fileName = file.name
+    //let fileNmae = pdfElement.name
+    let reader = new FileReader()
+    reader.readAsDataURL(file)
+    // ファイルの読み込み成功.
+    reader.onload = function (e) {
+      // データURLスキームを取得
+      let dataUrlScheme = reader.result
+      // データURLスキームからbase64形式のバイナリデータに変換する
+      let base64 = btoa(dataUrlScheme);
+      base64 = base64.replace(/^.*,/, '');
+
+      // URLエンコード
+      let file_name = encodeURIComponent(fileName);
+
+      // jsonを投げる
+      const obj = { uploadBase64: base64, searchArea: document.getElementById("searchArea").value }
+      const method = "POST"
+      const body = JSON.stringify(obj)
+      const headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+      fetch('/textDetectApi/v1', { method, headers, body })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data)
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
   })
 </script>
 

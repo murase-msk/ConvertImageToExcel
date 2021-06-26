@@ -1,6 +1,9 @@
 //画像の縦横の大きさ（ピクセル）
 let imageWidth
 let imageHeight
+// 前にクリックした位置
+let prevX
+let prevY
 // 0,1,2でループさせる
 let point = 0
 
@@ -13,19 +16,21 @@ const ctx = canvas.getContext('2d')
 myPics.addEventListener('mousedown', e => {
   x = e.offsetX;
   y = e.offsetY;
-  if (point == 0) { // 1ポイント目を設定.
-    //P0に表示
-    document.getElementById("point0X").innerHTML = x
-    document.getElementById("point0Y").innerHTML = y
-    document.getElementById("point0XNormalize").innerHTML = x / imageWidth
-    document.getElementById("point0YNormalize").innerHTML = y / imageHeight
+  if (point == 0) { // 1ポイント目をprevに入れる.
+    prevX = x
+    prevY = y
     point = 1
-  } else if (point == 1) {  // 2ポイント目を設定して描画
+  } else if (point == 1) {  // １ポイント目と2ポイント目からP0,P3を設定して描画
+    //P0に表示
+    document.getElementById("point0X").innerHTML = Math.min(x, prevX)
+    document.getElementById("point0Y").innerHTML = Math.min(y, prevY)
+    document.getElementById("point0XNormalize").innerHTML = Math.min(x / imageWidth, prevX / imageWidth)
+    document.getElementById("point0YNormalize").innerHTML = Math.min(y / imageWidth, prevY / imageWidth)
     //P3に表示
-    document.getElementById("point3X").innerHTML = x
-    document.getElementById("point3Y").innerHTML = y
-    document.getElementById("point3XNormalize").innerHTML = x / imageWidth
-    document.getElementById("point3YNormalize").innerHTML = y / imageHeight
+    document.getElementById("point3X").innerHTML = Math.max(x, prevX)
+    document.getElementById("point3Y").innerHTML = Math.max(y, prevY)
+    document.getElementById("point3XNormalize").innerHTML = Math.max(x / imageWidth, prevX / imageWidth)
+    document.getElementById("point3YNormalize").innerHTML = Math.max(y / imageWidth, prevY / imageWidth)
     //色を設定
     ctx.strokeStyle = "red";
     //描画する
