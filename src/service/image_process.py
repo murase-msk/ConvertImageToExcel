@@ -146,7 +146,7 @@ class ImageProcess:
         # outputList.append({"blocks": outputBlockList, "words": outputWordlList})
         return self.__getDocumentData(response.full_text_annotation)
 
-    def detectDocumentTextForPdf(self, binaryFile: bytes):
+    def detectDocumentTextForPdf(self, binaryFile: bytes) -> Dict[List[Word], List[Block]]:
         """ ドキュメントテキストの検出(PDF)
         """
         client = vision.ImageAnnotatorClient()
@@ -258,3 +258,62 @@ class ImageProcess:
                     )
                 )
         return {"blocks": outputBlockList, "words": outputWordlList}
+
+    def pickUpTextFromSearchAreas(self, binaryFile: bytes, searchAreas: List[SearchArea]) -> List[str]:
+        """ 指定範囲からテキストを抜き出す
+        """
+        client = vision.ImageAnnotatorClient()
+        req = vision.AnnotateFileRequest(
+            # バイナリファイルの指定
+            input_config=vision.InputConfig(content=binaryFile, mime_type='application/pdf'),
+            # 検出したい特徴の指定
+            features=[vision.Feature(type_=vision.Feature.Type.DOCUMENT_TEXT_DETECTION)],
+            # 言語ヒント
+            image_context=vision.ImageContext(language_hints=["en", "ja"]),
+            # 検出対象ページの指定
+            pages=[1]  # 同期の場合、5ページ以上指定不可
+        )
+        # batch_annotate_files呼び出し。リクエストがリストであることに注意。
+        batch_response = client.batch_annotate_files(requests=[req])
+        document = batch_response.responses[0].responses[0].full_text_annotation
+        return self.__getPdfDocumentDataFromSearchAreas(document, searchAreas)
+
+    def __getPdfDocumentDataFromSearchAreas(self, full_text_annotation, searchAreas: List[SearchArea]) -> List[str]:
+        """ full_text_annotationを解析して指定範囲からテキストを抜き出す
+        """
+        outputTextList: List[str] = []
+        i: int = 0
+        for i in range(len(searchAreas)):
+            outputTextList.append("")
+
+        for page in full_text_annotation.pages:
+            blockId: int = 0
+            for block in page.blocks:
+                oneBlockText: str = ""
+                for paragraph in block.paragraphs:
+                    oneParagraphText: str = ""
+                    for word in paragraph.words:
+                        oneWordText: str = ""
+                        for symbol in word.symbols:
+                            oneWordText = oneWordText + symbol.text
+                            oneParagraphText = oneParagraphText + symbol.text
+                            oneBlockText = oneBlockText + symbol.text
+
+                        oneWord: Word = Word(
+                            text=oneWordText,
+                            blockId=blockId,
+                            confidence=word.confidence,
+                            poly=Polygon(
+                                Point2D(word.bounding_box.normalized_vertices[0].x, word.bounding_box.normalized_vertices[0].y, evaluate=False),
+                                Point2D(word.bounding_box.normalized_vertices[1].x, word.bounding_box.normalized_vertices[1].y, evaluate=False),
+                                Point2D(word.bounding_box.normalized_vertices[2].x, word.bounding_box.normalized_vertices[2].y, evaluate=False),
+                                Point2D(word.bounding_box.normalized_vertices[3].x, word.bounding_box.normalized_vertices[3].y, evaluate=False)
+                            )
+                        )
+                        # このワードが取り出したい文字範囲の中に含まれれば抜き出す
+                        i: int = 0
+                        for i in range(len(searchAreas)):
+                            if searchAreas[i].poly.encloses_point(oneWord.poly.centroid):
+                                outputTextList[i] = outputTextList[i] + oneWord.text
+                blockId = blockId + 1
+        return outputTextList

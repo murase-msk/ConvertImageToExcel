@@ -8,11 +8,12 @@ PDF
 テキスト取得範囲
 <br>
 <textarea id="searchArea" cols="100"
-  rows="5">[{"x0":1, "y0":1, "x3":1, "y3":1}, {"x0":1, "y0":1, "x3":1, "y3":1}]</textarea>
+  rows="10">[{"x0":1, "y0":1, "x3":1, "y3":1}, {"x0":1, "y0":1, "x3":1, "y3":1}]</textarea>
 <br>
 <input type="button" id="uploadBase64" value="送信する">
+<ul id="resultList"></ul>
 
-<div id=res></div>
+
 
 <script type="text/javascript">
   //ボタンを押したらAjaxでデータを送る
@@ -46,7 +47,17 @@ PDF
       fetch('/textDetectApi/v1', { method, headers, body })
         .then(response => response.json())
         .then(data => {
-          console.log(data)
+          //リストクリア
+          let liList = document.getElementById("resultList").querySelectorAll("li")
+          liList.forEach(function (li) {
+            li.remove()
+          })
+          //結果をリストへ入れる
+          for (let i = 0; i < data["result"].length; i++) {
+            let li = document.createElement("li");
+            li.textContent = data["result"][i]
+            document.getElementById("resultList").appendChild(li)
+          }
         })
         .catch((error) => {
           console.error(error)

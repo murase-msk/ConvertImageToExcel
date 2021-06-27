@@ -6,8 +6,10 @@ from flask import request
 from flask import send_file
 from PIL import Image
 from PIL import ImageDraw
+from sympy.geometry.point import Point2D
+from sympy.geometry.polygon import Polygon
 from src.service.excel_process import ExcelData, ExcelProcess
-from src.service.image_process import Block, ImageProcess, Word
+from src.service.image_process import Block, ImageProcess, SearchArea, Word
 # from flask import current_app
 import pdf2image
 import base64
@@ -130,11 +132,24 @@ class ImageAnalysisController(MethodView):
         """
         jsonData = request.get_json()
         # テキスト取得範囲を取得する
-        searchAreaText = jsonData['textDetectArea']
-        searchArea = json.loads(searchAreaText)
-        print(searchArea[0]["x0"])
+        searchAreaText = jsonData['searchArea']
+        searchAreaList = json.loads(searchAreaText)
+        print(searchAreaList[0]["x0"])
 
-        # base64エンコードされたデータをデコードする
+        searchAreas: List[SearchArea] = []
+        for searchArea in searchAreaList:
+            searchAreas.append(
+                SearchArea(
+                    poly=Polygon(
+                        Point2D(searchArea["x0"], searchArea["y0"], evaluate=False),
+                        Point2D(searchArea["x3"], searchArea["y0"], evaluate=False),
+                        Point2D(searchArea["x3"], searchArea["y3"], evaluate=False),
+                        Point2D(searchArea["x0"], searchArea["y3"], evaluate=False)
+                    )
+                )
+            )
+
+            # base64エンコードされたデータをデコードする
         pdfAllBinary = base64.b64decode(jsonData['uploadBase64'])
         pdfStrConvert = str(pdfAllBinary)
         # PDFファイルでなければ終了
@@ -149,7 +164,8 @@ class ImageAnalysisController(MethodView):
 
         imageProcess: ImageProcess = ImageProcess()
         # 画像データをGoogleVisionAPIのdetectDocumentで解析
-        analysisDocumentList: Dict[List[Block], List[Word]] = imageProcess.detectDocumentTextForPdf(binaryPdf)
-        return ""
+        searchAreaTextList: List[str] = imageProcess.pickUpTextFromSearchAreas(binaryPdf, searchAreas)
+
+        return jsonify({'result': searchAreaTextList})
         # 配列へ変換
         # return
