@@ -7,6 +7,7 @@ from openpyxl.cell.cell import Cell
 from openpyxl.workbook.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 from src.service.image_process import Word
+from shapely.geometry.point import Point
 
 
 @dataclass(frozen=True)
@@ -64,7 +65,9 @@ class ExcelProcess:
         """
         totalDistance: float = 0
         for word in words:
-            totalDistance = totalDistance + word.poly.vertices[0].distance(word.poly.vertices[3])
+            totalDistance = totalDistance + Point(word.poly.exterior.xy[0][0],
+                                                  word.poly.exterior.xy[1][0]).distance(Point(word.poly.exterior.xy[0][3],
+                                                                                              word.poly.exterior.xy[1][3]))
         return float(totalDistance) / float(len(words))
 
     def sampleExcel(self):

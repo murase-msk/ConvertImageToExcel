@@ -6,8 +6,7 @@ from flask import request
 from flask import send_file
 from PIL import Image
 from PIL import ImageDraw
-from sympy.geometry.point import Point2D
-from sympy.geometry.polygon import Polygon
+from shapely.geometry.polygon import Polygon
 from src.service.excel_process import ExcelData, ExcelProcess
 from src.service.image_process import Block, ImageProcess, SearchArea, Word
 # from flask import current_app
@@ -141,10 +140,12 @@ class ImageAnalysisController(MethodView):
             searchAreas.append(
                 SearchArea(
                     poly=Polygon(
-                        Point2D(searchArea["x0"], searchArea["y0"], evaluate=False),
-                        Point2D(searchArea["x3"], searchArea["y0"], evaluate=False),
-                        Point2D(searchArea["x3"], searchArea["y3"], evaluate=False),
-                        Point2D(searchArea["x0"], searchArea["y3"], evaluate=False)
+                        [
+                            (searchArea["x0"], searchArea["y0"]),
+                            (searchArea["x3"], searchArea["y0"]),
+                            (searchArea["x3"], searchArea["y3"]),
+                            (searchArea["x0"], searchArea["y3"])
+                        ]
                     )
                 )
             )

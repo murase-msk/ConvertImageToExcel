@@ -11,10 +11,13 @@ Pillow == 8.2.0
 # Excel処理
 openpyxl == 3.0.7
 # 図形の処理
-sympy == 1.8
+# sympy == 1.8
+# 図形処理その２
+Shapely == 1.7.1
 # 画像変換
 pdf2image == 1.16.0
 Pillow == 8.2.0
+
 
 # バージョンまで指定する場合
 # flask == 1.1.2

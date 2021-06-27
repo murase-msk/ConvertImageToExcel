@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, List
 from google.cloud import vision
-from sympy import Polygon, Point2D
+from shapely.geometry.polygon import Polygon
 
 
 @dataclass(frozen=True)
@@ -190,10 +190,12 @@ class ImageProcess:
                                 blockId=blockId,
                                 confidence=word.confidence,
                                 poly=Polygon(
-                                    Point2D(word.bounding_box.vertices[0].x, word.bounding_box.vertices[0].y, evaluate=False),
-                                    Point2D(word.bounding_box.vertices[1].x, word.bounding_box.vertices[1].y, evaluate=False),
-                                    Point2D(word.bounding_box.vertices[2].x, word.bounding_box.vertices[2].y, evaluate=False),
-                                    Point2D(word.bounding_box.vertices[3].x, word.bounding_box.vertices[3].y, evaluate=False)
+                                    [
+                                        (word.bounding_box.vertices[0].x, word.bounding_box.vertices[0].y),
+                                        (word.bounding_box.vertices[1].x, word.bounding_box.vertices[1].y),
+                                        (word.bounding_box.vertices[2].x, word.bounding_box.vertices[2].y),
+                                        (word.bounding_box.vertices[3].x, word.bounding_box.vertices[3].y)
+                                    ]
                                 )
                             )
                         )
@@ -204,10 +206,12 @@ class ImageProcess:
                         id=blockId,
                         confidence=block.confidence,
                         poly=Polygon(
-                            Point2D(block.bounding_box.vertices[0].x, block.bounding_box.vertices[0].y, evaluate=False),
-                            Point2D(block.bounding_box.vertices[1].x, block.bounding_box.vertices[1].y, evaluate=False),
-                            Point2D(block.bounding_box.vertices[2].x, block.bounding_box.vertices[2].y, evaluate=False),
-                            Point2D(block.bounding_box.vertices[3].x, block.bounding_box.vertices[3].y, evaluate=False)
+                            [
+                                (block.bounding_box.vertices[0].x, block.bounding_box.vertices[0].y),
+                                (block.bounding_box.vertices[1].x, block.bounding_box.vertices[1].y),
+                                (block.bounding_box.vertices[2].x, block.bounding_box.vertices[2].y),
+                                (block.bounding_box.vertices[3].x, block.bounding_box.vertices[3].y)
+                            ]
                         )
                     )
                 )
@@ -236,10 +240,12 @@ class ImageProcess:
                                 blockId=blockId,
                                 confidence=word.confidence,
                                 poly=Polygon(
-                                    Point2D(word.bounding_box.normalized_vertices[0].x, word.bounding_box.normalized_vertices[0].y, evaluate=False),
-                                    Point2D(word.bounding_box.normalized_vertices[1].x, word.bounding_box.normalized_vertices[1].y, evaluate=False),
-                                    Point2D(word.bounding_box.normalized_vertices[2].x, word.bounding_box.normalized_vertices[2].y, evaluate=False),
-                                    Point2D(word.bounding_box.normalized_vertices[3].x, word.bounding_box.normalized_vertices[3].y, evaluate=False)
+                                    [
+                                        (word.bounding_box.normalized_vertices[0].x, word.bounding_box.normalized_vertices[0].y),
+                                        (word.bounding_box.normalized_vertices[1].x, word.bounding_box.normalized_vertices[1].y),
+                                        (word.bounding_box.normalized_vertices[2].x, word.bounding_box.normalized_vertices[2].y),
+                                        (word.bounding_box.normalized_vertices[3].x, word.bounding_box.normalized_vertices[3].y)
+                                    ]
                                 )
                             )
                         )
@@ -250,10 +256,12 @@ class ImageProcess:
                         id=blockId,
                         confidence=block.confidence,
                         poly=Polygon(
-                            Point2D(block.bounding_box.normalized_vertices[0].x, block.bounding_box.normalized_vertices[0].y, evaluate=False),
-                            Point2D(block.bounding_box.normalized_vertices[1].x, block.bounding_box.normalized_vertices[1].y, evaluate=False),
-                            Point2D(block.bounding_box.normalized_vertices[2].x, block.bounding_box.normalized_vertices[2].y, evaluate=False),
-                            Point2D(block.bounding_box.normalized_vertices[3].x, block.bounding_box.normalized_vertices[3].y, evaluate=False)
+                            [
+                                (block.bounding_box.normalized_vertices[0].x, block.bounding_box.normalized_vertices[0].y),
+                                (block.bounding_box.normalized_vertices[1].x, block.bounding_box.normalized_vertices[1].y),
+                                (block.bounding_box.normalized_vertices[2].x, block.bounding_box.normalized_vertices[2].y),
+                                (block.bounding_box.normalized_vertices[3].x, block.bounding_box.normalized_vertices[3].y)
+                            ]
                         )
                     )
                 )
@@ -304,16 +312,18 @@ class ImageProcess:
                             blockId=blockId,
                             confidence=word.confidence,
                             poly=Polygon(
-                                Point2D(word.bounding_box.normalized_vertices[0].x, word.bounding_box.normalized_vertices[0].y, evaluate=False),
-                                Point2D(word.bounding_box.normalized_vertices[1].x, word.bounding_box.normalized_vertices[1].y, evaluate=False),
-                                Point2D(word.bounding_box.normalized_vertices[2].x, word.bounding_box.normalized_vertices[2].y, evaluate=False),
-                                Point2D(word.bounding_box.normalized_vertices[3].x, word.bounding_box.normalized_vertices[3].y, evaluate=False)
+                                [
+                                    (word.bounding_box.normalized_vertices[0].x, word.bounding_box.normalized_vertices[0].y),
+                                    (word.bounding_box.normalized_vertices[1].x, word.bounding_box.normalized_vertices[1].y),
+                                    (word.bounding_box.normalized_vertices[2].x, word.bounding_box.normalized_vertices[2].y),
+                                    (word.bounding_box.normalized_vertices[3].x, word.bounding_box.normalized_vertices[3].y)
+                                ]
                             )
                         )
                         # このワードが取り出したい文字範囲の中に含まれれば抜き出す
                         i: int = 0
                         for i in range(len(searchAreas)):
-                            if searchAreas[i].poly.encloses_point(oneWord.poly.centroid):
+                            if searchAreas[i].poly.contains(oneWord.poly.centroid):
                                 outputTextList[i] = outputTextList[i] + oneWord.text
                 blockId = blockId + 1
         return outputTextList

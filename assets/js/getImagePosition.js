@@ -26,15 +26,15 @@ myPics.addEventListener('mousedown', e => {
     document.getElementById("point0Y").innerHTML = Math.min(y, prevY)
     document.getElementsByClassName("point0XNormalize")[0].innerHTML = Math.min(x / imageWidth, prevX / imageWidth)
     document.getElementsByClassName("point0XNormalize")[1].innerHTML = Math.min(x / imageWidth, prevX / imageWidth)
-    document.getElementsByClassName("point0YNormalize")[0].innerHTML = Math.min(y / imageWidth, prevY / imageWidth)
-    document.getElementsByClassName("point0YNormalize")[1].innerHTML = Math.min(y / imageWidth, prevY / imageWidth)
+    document.getElementsByClassName("point0YNormalize")[0].innerHTML = Math.min(y / imageHeight, prevY / imageHeight)
+    document.getElementsByClassName("point0YNormalize")[1].innerHTML = Math.min(y / imageHeight, prevY / imageHeight)
     //P3に表示
     document.getElementById("point3X").innerHTML = Math.max(x, prevX)
     document.getElementById("point3Y").innerHTML = Math.max(y, prevY)
     document.getElementsByClassName("point3XNormalize")[0].innerHTML = Math.max(x / imageWidth, prevX / imageWidth)
     document.getElementsByClassName("point3XNormalize")[1].innerHTML = Math.max(x / imageWidth, prevX / imageWidth)
-    document.getElementsByClassName("point3YNormalize")[0].innerHTML = Math.max(y / imageWidth, prevY / imageWidth)
-    document.getElementsByClassName("point3YNormalize")[1].innerHTML = Math.max(y / imageWidth, prevY / imageWidth)
+    document.getElementsByClassName("point3YNormalize")[0].innerHTML = Math.max(y / imageHeight, prevY / imageHeight)
+    document.getElementsByClassName("point3YNormalize")[1].innerHTML = Math.max(y / imageHeight, prevY / imageHeight)
     //色を設定
     ctx.strokeStyle = "red";
     //描画する
