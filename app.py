@@ -3,8 +3,14 @@ from flask import Flask
 from src.controller.index_controller import IndexController
 from src.controller.user_controller import UserController
 from src.controller.image_analysis_controller import ImageAnalysisController
+from database import init_db
+# from src.model.models import User
 
 app = Flask(__name__)
+
+# DB設定
+app.config.from_object('config.Config')
+init_db(app)
 
 # 参照するフォルダの指定
 app = Flask(__name__, static_folder="assets", template_folder="assets/html")

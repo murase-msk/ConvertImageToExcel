@@ -1,2 +1,5 @@
 /secret/
 __pycache__/
+/build/db/data/*
+/build/db/sql/*
+/assets/img/tmp/*

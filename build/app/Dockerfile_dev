@@ -22,3 +22,5 @@ RUN pip install -r requirements.txt
 # PDF image 変換
 RUN apt-get install -y poppler-utils
 
+# mysql client
+RUN apt-get install -y default-mysql-client

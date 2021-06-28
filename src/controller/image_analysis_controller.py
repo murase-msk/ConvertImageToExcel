@@ -9,10 +9,12 @@ from PIL import ImageDraw
 from shapely.geometry.polygon import Polygon
 from src.service.excel_process import ExcelData, ExcelProcess
 from src.service.image_process import Block, ImageProcess, SearchArea, Word
+from src.service.other_serivce import OtherService
 # from flask import current_app
 import pdf2image
 import base64
 import json
+import datetime
 
 
 class ImageAnalysisController(MethodView):
@@ -97,6 +99,10 @@ class ImageAnalysisController(MethodView):
     def drawDetectTextAction():
         """ 認識した範囲を描画して画像を返す
         """
+        # 古い画像を削除
+        otherService = OtherService()
+        otherService.removeOldFile
+
         imgFile = request.files['image-input']
         imgName = imgFile.filename
         # imgFile.save(os.path.join("secret/tmpImage/", imgName))
@@ -109,19 +115,25 @@ class ImageAnalysisController(MethodView):
         d = ImageDraw.Draw(img)
         for one in drawList:
             d.rectangle(one, outline='green', width=3)
-        img.save('secret/tmpImage/convert.jpg', quality=95)
-        return send_file('secret/tmpImage/convert.jpg', attachment_filename=imgName, as_attachment=True, mimetype='image/jpeg')
+        dateStr: str = str(datetime.datetime.now().strftime('%Y%m%d_%H_%M_%S'))
+        outputFilePath: str = 'assets/img/tmp/img_' + dateStr + '.jpg'
+        img.save(outputFilePath, quality=95)
+        return send_file(outputFilePath, attachment_filename=imgName, as_attachment=True, mimetype='image/jpeg')
 
         # return send_file(img.read(), attachment_filename=imgName, as_attachment=True, mimetype='image/jpeg')
 
     def convertPdfToImgAction():
         """ PDFをJPEG変換し表示する
         """
+        # 古い画像を削除
+        otherService = OtherService()
+        otherService.removeOldFile
+
         imgFile = request.files['pdf-input']
         # imgName = imgFile.filename
-        # imgFile.save(os.path.join("secret/tmpImage/", imgName))
         images = pdf2image.convert_from_bytes(imgFile.read())
-        convertedFilePath: str = "assets/img/tmp/test.png"
+        dateStr: str = str(datetime.datetime.now().strftime('%Y%m%d_%H_%M_%S'))
+        convertedFilePath: str = "assets/img/tmp/img_" + dateStr + ".png"
         images[0].save(convertedFilePath)
 
         return render_template('getImagePositionResultPage.html', title='Image Analysis Result', imagePath="/" + convertedFilePath)
