@@ -2,7 +2,7 @@
 from flask.views import MethodView
 from flask import render_template
 
-from src.model.models import User
+# from src.model.model import User
 
 
 class IndexController(MethodView):

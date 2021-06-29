@@ -1,4 +1,4 @@
-from .models import User
+from src.model.model import User
 
 
 __all__ = [

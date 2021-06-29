@@ -3,3 +3,4 @@ __pycache__/
 /build/db/data/*
 /build/db/sql/*
 /assets/img/tmp/*
+/migrations/*

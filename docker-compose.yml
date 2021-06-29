@@ -26,7 +26,9 @@ services:
         environment:
             TZ: Asia/Tokyo
             FLASK_ENV: "development"
-            GOOGLE_APPLICATION_CREDENTIALS: ""
+            # GOOGLE_APPLICATION_CREDENTIALS: ""
+        env_file:
+          - ./secret/.env_dev
         # 起動したままにする
         tty: true
         #command : python app.py
