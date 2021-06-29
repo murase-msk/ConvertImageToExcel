@@ -4,7 +4,7 @@ from src.controller.index_controller import IndexController
 from src.controller.user_controller import UserController
 from src.controller.image_analysis_controller import ImageAnalysisController
 from database import init_db
-from src.model.model import User
+# from src.model.model import User
 
 app = Flask(__name__)
 
@@ -52,12 +52,12 @@ app.add_url_rule('/user/<user_id>', view_func=UserController.userAction, methods
 app.add_url_rule('/user/config', view_func=UserController.configAction, methods=['GET'])
 
 
-@app.route('/')
-def hello():
-    allUser = User.query.all()
-    user: User = allUser[0]
-    # name = "Hello World"
-    return user.name
+# @app.route('/')
+# def hello():
+#     allUser = User.query.all()
+#     user: User = allUser[0]
+#     # name = "Hello World"
+#     return user.name
 
 
 if __name__ == '__main__':
