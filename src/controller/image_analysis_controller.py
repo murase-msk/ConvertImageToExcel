@@ -169,12 +169,11 @@ class ImageAnalysisController(MethodView):
         # ここまでDB操作
 
         jsonData = request.get_json()
+
         # テキスト取得範囲を取得する
         searchAreaText = jsonData['searchArea']
         searchAreaList = json.loads(searchAreaText)
-        print(searchAreaList[0]["x0"])
-
-        searchAreas: List[SearchArea] = []
+        searchAreas: List[SearchArea] = []  # この中に検索エリアのデータが入る
         for searchArea in searchAreaList:
             searchAreas.append(
                 SearchArea(
@@ -194,18 +193,15 @@ class ImageAnalysisController(MethodView):
         pdfStrConvert = str(pdfAllBinary)
         # PDFファイルでなければ終了
         if "b'data:application/pdf;base64," not in pdfStrConvert:
-            return ""
+            return jsonify({'result': ['ファイルが正しくありません']})
         # ヘッダー削除
         deletedHeaderPdf = pdfStrConvert.replace("b'data:application/pdf;base64,", '').replace("EOF'", 'EOF')
         # バイト変換
         pdfBinaryReConverted = bytes(deletedHeaderPdf, encoding="utf-8")
         # ヘッダーを取り除いたところで再度base64デコード
         binaryPdf: bytes = base64.b64decode(pdfBinaryReConverted)
-
         imageProcess: ImageProcess = ImageProcess()
         # 画像データをGoogleVisionAPIのdetectDocumentで解析
         searchAreaTextList: List[str] = imageProcess.pickUpTextFromSearchAreas(binaryPdf, searchAreas)
 
         return jsonify({'result': searchAreaTextList})
-        # 配列へ変換
-        # return
