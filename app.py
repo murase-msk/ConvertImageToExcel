@@ -1,29 +1,28 @@
-# import os
+import os
 from flask import Flask
 from src.controller.index_controller import IndexController
 from src.controller.user_controller import UserController
 from src.controller.image_analysis_controller import ImageAnalysisController
 from database import init_db
-# from src.model.model import User
+from src.model.model import User
+from src.model.settingModel import Setting
+import logging
 
 app = Flask(__name__)
 
 # 参照するフォルダの指定
 app = Flask(__name__, static_folder="assets", template_folder="assets/html")
 
+if os.environ['FLASK_ENV'] == 'development':
+    # ロギング設定
+    logging.basicConfig(level=logging.INFO)
+    # SQLAlchemyのログ出力
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
+
 # DB設定
 app.config.from_object('config.Config')
 init_db(app)
-
-# 環境変数設定(上書きする)
-# app.config.from_pyfile('./secret/.env_dev')
-# google Vision API キー設定
-# os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = app.config['GOOGLE_APPLICATION_CREDENTIALS']
-# MySQL環境変数設定
-# os.environ['MYSQL_USER'] = app.config['MYSQL_USER']
-# os.environ['MYSQL_PASSWORD'] = app.config['MYSQL_PASSWORD']
-# os.environ['MYSQL_HOST'] = app.config['MYSQL_HOST']
-# os.environ['MYSQL_DATABASE'] = app.config['MYSQL_DATABASE']
 
 # ファイルアップロード制限 : 3MB
 app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
