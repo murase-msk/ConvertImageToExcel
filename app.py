@@ -44,8 +44,8 @@ app.add_url_rule('/detectText/file-upload', view_func=ImageAnalysisController.de
 app.add_url_rule('/getImagePosition', view_func=IndexController.getImagePositionPageAction, methods=['GET'])
 app.add_url_rule('/getImagePosition/file-upload', view_func=ImageAnalysisController.convertPdfToImgAction, methods=['POST'])
 
-app.add_url_rule('/textDetectApi', view_func=IndexController.textDetectApiPageAction, methods=['GET'])
-app.add_url_rule('/textDetectApi/v1', view_func=ImageAnalysisController.textDetectApiV1Action, methods=['POST'])
+app.add_url_rule('/textDetectApiPage', view_func=IndexController.textDetectApiPageAction, methods=['GET'])
+app.add_url_rule('/textDetectApi', view_func=ImageAnalysisController.textDetectApiAction, methods=['POST'])
 
 app.add_url_rule('/user/<user_id>', view_func=UserController.userAction, methods=['GET'])
 app.add_url_rule('/user/config', view_func=UserController.configAction, methods=['GET'])
@@ -60,5 +60,9 @@ app.add_url_rule('/user/config', view_func=UserController.configAction, methods=
 
 
 if __name__ == '__main__':
-    # app.run(host="127.0.0.1", port=5000, debug=True)
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    #
+    if os.environ['FLASK_ENV'] == 'development':
+        app.run(host="0.0.0.0", port=5000, debug=True)
+    else:
+        #app.run(host="127.0.0.1", port=3031, debug=False)
+        app.run()

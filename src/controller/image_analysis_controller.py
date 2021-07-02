@@ -139,7 +139,7 @@ class ImageAnalysisController(MethodView):
 
         return render_template('getImagePositionResultPage.html', title='Image Analysis Result', imagePath="/" + convertedFilePath)
 
-    def textDetectApiV1Action():
+    def textDetectApiAction():
         """ BASE64エンコードされたPDFファイルと検出したい文字範囲を受け取って文字認識して返す
         """
 
@@ -188,20 +188,27 @@ class ImageAnalysisController(MethodView):
                 )
             )
 
-            # base64エンコードされたデータをデコードする
-        pdfAllBinary = base64.b64decode(jsonData['uploadBase64'])
-        pdfStrConvert = str(pdfAllBinary)
-        # PDFファイルでなければ終了
-        if "b'data:application/pdf;base64," not in pdfStrConvert:
-            return jsonify({'result': ['ファイルが正しくありません']})
-        # ヘッダー削除
-        deletedHeaderPdf = pdfStrConvert.replace("b'data:application/pdf;base64,", '').replace("EOF'", 'EOF')
-        # バイト変換
-        pdfBinaryReConverted = bytes(deletedHeaderPdf, encoding="utf-8")
-        # ヘッダーを取り除いたところで再度base64デコード
-        binaryPdf: bytes = base64.b64decode(pdfBinaryReConverted)
-        imageProcess: ImageProcess = ImageProcess()
-        # 画像データをGoogleVisionAPIのdetectDocumentで解析
-        searchAreaTextList: List[str] = imageProcess.pickUpTextFromSearchAreas(binaryPdf, searchAreas)
+        # base64エンコードされたデータをデコードする
+        pdfAllBinary: bytes = base64.b64decode(jsonData['uploadBase64'])
+        pdfStrConvert: str = str(pdfAllBinary)
 
-        return jsonify({'result': searchAreaTextList})
+        if "b'data:application/pdf;base64," in pdfStrConvert:  # ヘッダーがあれば削除
+            # ヘッダー削除
+            deletedHeaderPdf = pdfStrConvert.replace("b'data:application/pdf;base64,", '').replace("EOF'", 'EOF')
+            # バイト変換
+            pdfBinaryReConverted = bytes(deletedHeaderPdf, encoding="utf-8")
+            # ヘッダーを取り除いたところで再度base64デコード
+            binaryPdf: bytes = base64.b64decode(pdfBinaryReConverted)
+            imageProcess: ImageProcess = ImageProcess()
+            # 画像データをGoogleVisionAPIのdetectDocumentで解析
+            searchAreaTextList: List[str] = imageProcess.pickUpTextFromSearchAreas(binaryPdf, searchAreas)
+
+            return jsonify({'result': searchAreaTextList})
+        else:
+            if "%PDF" in pdfStrConvert:  # ヘッダーがないPDFファイルであればそのまま渡す
+                imageProcess: ImageProcess = ImageProcess()
+                # 画像データをGoogleVisionAPIのdetectDocumentで解析
+                searchAreaTextList: List[str] = imageProcess.pickUpTextFromSearchAreas(pdfAllBinary, searchAreas)
+                return jsonify({'result': searchAreaTextList})
+            else:  # PDFファイルでなければ終了
+                return jsonify({'result': ['ファイルが正しくありません']})

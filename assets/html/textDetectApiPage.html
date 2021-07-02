@@ -44,7 +44,7 @@ PDF
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       }
-      fetch('/textDetectApi/v1', { method, headers, body })
+      fetch('/textDetectApi', { method, headers, body })
         .then(response => response.json())
         .then(data => {
           //リストクリア
