@@ -170,23 +170,26 @@ class ImageAnalysisController(MethodView):
 
         jsonData = request.get_json()
 
-        # テキスト取得範囲を取得する
-        searchAreaText = jsonData['searchArea']
-        searchAreaList = json.loads(searchAreaText)
-        searchAreas: List[SearchArea] = []  # この中に検索エリアのデータが入る
-        for searchArea in searchAreaList:
-            searchAreas.append(
-                SearchArea(
-                    poly=Polygon(
-                        [
-                            (searchArea["x0"], searchArea["y0"]),
-                            (searchArea["x3"], searchArea["y0"]),
-                            (searchArea["x3"], searchArea["y3"]),
-                            (searchArea["x0"], searchArea["y3"])
-                        ]
+        try:
+            # テキスト取得範囲を取得する
+            searchAreaText = jsonData['searchArea']
+            searchAreaList = json.loads(searchAreaText)
+            searchAreas: List[SearchArea] = []  # この中に検索エリアのデータが入る
+            for searchArea in searchAreaList:
+                searchAreas.append(
+                    SearchArea(
+                        poly=Polygon(
+                            [
+                                (searchArea["x0"], searchArea["y0"]),
+                                (searchArea["x3"], searchArea["y0"]),
+                                (searchArea["x3"], searchArea["y3"]),
+                                (searchArea["x0"], searchArea["y3"])
+                            ]
+                        )
                     )
                 )
-            )
+        except BaseException:
+            return jsonify({'result': ['入力エラー']})
 
         # base64エンコードされたデータをデコードする
         pdfAllBinary: bytes = base64.b64decode(jsonData['uploadBase64'])

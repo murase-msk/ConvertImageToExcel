@@ -7,6 +7,7 @@ from database import init_db
 from src.model.model import User
 from src.model.settingModel import Setting
 import logging
+from logging import StreamHandler
 
 app = Flask(__name__)
 
@@ -19,6 +20,10 @@ if os.environ['FLASK_ENV'] == 'development':
     # SQLAlchemyのログ出力
     logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
+# # ロギング設定
+handler = StreamHandler()
+app.logger.setLevel(logging.DEBUG)
+app.logger.addHandler(handler)
 
 # DB設定
 app.config.from_object('config.Config')

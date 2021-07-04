@@ -1,0 +1,86 @@
+#GCP
+
+# Linuxシステムアップデート
+$ sudo apt update && sudo apt upgrade -y
+
+# タイムゾーンを日本に設定
+sudo timedatectl set-timezone Asia/Tokyo
+
+
+# Docker (Community Edition) インストール
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+$ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+$ sudo apt update && sudo apt install -y docker-ce
+## dockerデーモン起動
+$ sudo service docker start
+
+
+# docker-compose 導入
+$ sudo curl -L https://github.com/docker/compose/releases/download/1.26.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+$ sudo chmod +x /usr/local/bin/docker-compose
+
+# Dockerを sudo なしで実行可能に
+## ※ カレントユーザーをdockerグループに所属させた上で docker.sock へのグループ書き込み権限を付与すればよい
+# sudo gpasswd -a $USER docker
+# sudo chgrp docker /var/run/docker.sock
+$ sudo service docker restart
+# 一度ログアウトしないと反映されないため、一旦 exit
+$ exit
+
+
+# github からソースコードダウンロード
+sudo git clone https://github.com/murase-msk/ConvertImageToExcel.git /workspace/ConvertImageToExcel
+cd /workspace
+sudo chmod 777 -R ConvertImageToExcel
+cd ConvertImageToExcel
+/secretフォルダの内容をコピー(RLoginのSCP転送)
+sudo chmod 777 -R ConvertImageToExcel
+
+# docker-compose実行
+docker-compose up -d --build
+
+#　ssl設定
+ngnixコンテナでcertbot実行
+sudo apt-get install -y certbot python3-certbot-nginx
+sudo certbot --nginx  //本番環境ここから始める 21/7/4
+入力項目は下記の通り
+  メールアドレス　xxxx@xxx.co.jp
+  Agree
+  No 
+  ドメイン domain.com
+
+
+# ホストOS側でcron設定
+sudo crontab -u root -e
+# 毎月1日の深夜4:00に証明書を更新
+00 04 01 * * docker-compose exec web certbot renew
+# 毎月1日の深夜4:05にdocker-composeリスタート
+05 04 01 * * docker-compose restart
+
+
+# Flask DB初期設定
+# 初期化
+flask db init
+# migrationファイル作成
+flask db migrate
+# migration実行
+flask db upgrade
+# 初期データを入れる
+python fixtures/init.py
+
+
+--------------------------------------------------------------
+# 再起動後の設定
+cd /workspace/ConvertImageToExcel
+docker-compose -f /workspace/ConvertImageToExcel/docker-compose_production.yml up -d
+
+# データ更新
+sudo rm -rf /workspace/ConvertImageToExcel
+# github からソースコードダウンロード
+sudo git clone https://github.com/murase-msk/ConvertImageToExcel.git /workspace/ConvertImageToExcel
+/secretフォルダの内容をコピー(RLoginのSCP転送)
+cd /workspace
+sudo chmod 777 -R ConvertImageToExcel
+cd ConvertImageToExcel
+# docker-compose実行
+docker-compose up -d --build
