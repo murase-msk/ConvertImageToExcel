@@ -1,5 +1,5 @@
 import os
-import datetime as datetime
+import datetime
 import re
 
 
@@ -16,10 +16,10 @@ class OtherService():
             # 日付の文字列を取得
             result = re.match('^img_(\\d\\d\\d\\d\\d\\d\\d\\d)_.*$', fileName)
             if result:
-                fileCreateDate = datetime.strptime(result.group(1), '%Y%m%d')
-                today = datetime.strptime(str(datetime.now().year) +
-                                          str(datetime.now().month) +
-                                          str(datetime.now().day), '%Y%m%d')
+                fileCreateDate = datetime.datetime.strptime(result.group(1), '%Y%m%d')
+                today = datetime.datetime.strptime(str(datetime.datetime.now().year) +
+                                                   str(datetime.datetime.now().month) +
+                                                   str(datetime.datetime.now().day), '%Y%m%d')
                 # 今日より前であれば削除する
                 if fileCreateDate < today:
                     os.remove(tmpImagePath + fileName)

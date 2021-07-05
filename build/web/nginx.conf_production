@@ -33,18 +33,18 @@ http {
 
     # httpはhttpsへ転送する
     server {
-        server_name murase-msk.work;
+        server_name textdetector.murase-msk.work;
         listen 80;
         return 301 https://$host$request_uri;
     }
     # https設定
     server {
-        server_name murase-msk.work;
+        server_name textdetector.murase-msk.work;
         listen  443;
         ssl on;
         ssl_protocols  TLSv1.2 TLSv1.3;
-        ssl_certificate     /etc/letsencrypt/live/murase-msk.work/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/murase-msk.work/privkey.pem;
+        ssl_certificate     /etc/letsencrypt/live/textdetector.murase-msk.work/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/textdetector.murase-msk.work/privkey.pem;
 
         charset utf-8;
 

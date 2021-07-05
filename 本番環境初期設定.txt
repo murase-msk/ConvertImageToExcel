@@ -41,8 +41,8 @@ docker-compose up -d --build
 
 #　ssl設定
 ngnixコンテナでcertbot実行
-sudo apt-get install -y certbot python3-certbot-nginx
-sudo certbot --nginx  //本番環境ここから始める 21/7/4
+sudo apt-get install -y certbot python3-certbot-nginx //本番環境ここから始める 21/7/4
+sudo certbot --nginx 
 入力項目は下記の通り
   メールアドレス　xxxx@xxx.co.jp
   Agree
@@ -73,14 +73,17 @@ python fixtures/init.py
 # 再起動後の設定
 cd /workspace/ConvertImageToExcel
 docker-compose -f /workspace/ConvertImageToExcel/docker-compose_production.yml up -d
+docker-compose -f /workspace/ConvertImageToExcel/docker-compose.yml up -d
 
 # データ更新
 sudo rm -rf /workspace/ConvertImageToExcel
-# github からソースコードダウンロード
 sudo git clone https://github.com/murase-msk/ConvertImageToExcel.git /workspace/ConvertImageToExcel
+sudo chmod 777 -R /workspace/ConvertImageToExcel
 /secretフォルダの内容をコピー(RLoginのSCP転送)
-cd /workspace
-sudo chmod 777 -R ConvertImageToExcel
-cd ConvertImageToExcel
-# docker-compose実行
+cd /workspace/ConvertImageToExcel
 docker-compose up -d --build
+# Flask DB初期設定
+flask db init
+flask db migrate
+flask db upgrade
+python fixtures/init.py

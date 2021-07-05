@@ -128,7 +128,7 @@ class ImageAnalysisController(MethodView):
         """
         # 古い画像を削除
         otherService = OtherService()
-        otherService.removeOldFile
+        otherService.removeOldFile()
 
         imgFile = request.files['pdf-input']
         # imgName = imgFile.filename
