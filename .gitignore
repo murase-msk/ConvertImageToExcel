@@ -5,3 +5,5 @@ __pycache__/
 /assets/img/tmp/*
 /migrations/*
 /build/web/nginx.conf
+/build/web/etc/*
+/build/web/var/*

@@ -42,15 +42,10 @@ docker-compose up -d --build
 
 #　ssl設定
 ngnixコンテナでcertbot実行
-sudo apt-get install -y certbot python3-certbot-nginx //本番環境ここから始める 21/7/4
-sudo certbot --nginx 
-入力項目は下記の通り
-  メールアドレス　xxxx@xxx.co.jp
-  Agree
-  No 
-  ドメイン domain.com
-certbot certonly --agree-tos --webroot -w /var/www/ConvertImageToExcel -d textdetector.murase-msk.work
-
+apt-get update
+apt-get install -y certbot python3-certbot-nginx
+certbot certonly --agree-tos --standalone -d textdetector.murase-msk.work -m yourMailAddress@xxx.com -n
+ 
 # ホストOS側でcron設定
 sudo crontab -u root -e
 # 毎月1日の深夜4:00に証明書を更新

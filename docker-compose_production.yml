@@ -62,6 +62,12 @@ services:
       - ./build/web/nginx.conf_development:/etc/nginx/nginx.conf_development
       # nginxのログをホストOSの /tmp/nginx_log に出力する
       - /build/web/tmp/nginx_log:/var/log/nginx
+      # lets encrypt
+      - /build/web/etc/letsencrypt:/etc/letsencrypt
+      - /build/web/var/lib/letsencrypt:/var/lib/letsencrypt
+    # 環境変数読み込み
+    env_file:
+      - ./secret/.env
     links:
       - app
     ports:
