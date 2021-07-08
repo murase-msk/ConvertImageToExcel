@@ -68,6 +68,8 @@ services:
     # 環境変数読み込み
     env_file:
       - ./secret/.env
+    args:
+      - EMAIL_ADDRESS=${EMAIL_ADDRESS}
     links:
       - app
     ports:
