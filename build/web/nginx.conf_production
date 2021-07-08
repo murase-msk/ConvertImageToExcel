@@ -41,8 +41,8 @@ http {
     server {
         server_name textdetector.murase-msk.work;
         listen  443;
-        ssl on;
-        ssl_protocols  TLSv1.2 TLSv1.3;
+        # ssl on;
+        # ssl_protocols  TLSv1.2 TLSv1.3;
         ssl_certificate     /etc/letsencrypt/live/textdetector.murase-msk.work/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/textdetector.murase-msk.work/privkey.pem;
 

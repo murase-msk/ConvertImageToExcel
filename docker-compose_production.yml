@@ -58,6 +58,8 @@ services:
       dockerfile: ./Dockerfile
     volumes:
       - ./build/web/nginx.conf:/etc/nginx/nginx.conf
+      - ./build/web/nginx.conf_production:/etc/nginx/nginx.conf_production
+      - ./build/web/nginx.conf_development:/etc/nginx/nginx.conf_development
       # nginxのログをホストOSの /tmp/nginx_log に出力する
       - /build/web/tmp/nginx_log:/var/log/nginx
     links:

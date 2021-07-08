@@ -34,6 +34,7 @@ cd /workspace
 sudo chmod 777 -R ConvertImageToExcel
 cd ConvertImageToExcel
 /secretフォルダの内容をコピー(RLoginのSCP転送)
+/assets/img/tmpフォルダ作成
 sudo chmod 777 -R ConvertImageToExcel
 
 # docker-compose実行
@@ -48,7 +49,7 @@ sudo certbot --nginx
   Agree
   No 
   ドメイン domain.com
-
+certbot certonly --agree-tos --webroot -w /var/www/ConvertImageToExcel -d textdetector.murase-msk.work
 
 # ホストOS側でcron設定
 sudo crontab -u root -e
@@ -87,3 +88,6 @@ flask db init
 flask db migrate
 flask db upgrade
 python fixtures/init.py
+--------------------------------------------------------------
+github
+
