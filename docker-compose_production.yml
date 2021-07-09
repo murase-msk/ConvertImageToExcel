@@ -51,7 +51,7 @@ services:
       - ./build/web/nginx.conf_production:/etc/nginx/nginx.conf_production
       - ./build/web/nginx.conf_development:/etc/nginx/nginx.conf_development
       # nginxのログをホストOSの /tmp/nginx_log に出力する
-      - ./build/web/tmp/nginx_log:/var/log/nginx
+      - ./build/web/nginx_log:/var/log/nginx
       # challenge用
       - ./build/web2/html:/usr/share/nginx/challenge
     # 環境変数読み込み
