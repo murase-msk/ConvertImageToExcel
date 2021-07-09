@@ -15,8 +15,8 @@ services:
       - 443:443
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - build/web2/cert:/etc/nginx/certs
-      - build/web2/html:/usr/share/nginx/html
+      - ./build/web2/cert:/etc/nginx/certs
+      - ./build/web2/html:/usr/share/nginx/html
     labels:
       com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
     # ネットワークの設定
@@ -29,9 +29,9 @@ services:
     container_name: lets
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - build/web2/cert:/etc/nginx/certs:rw
-      - build/web2/html:/usr/share/nginx/html
-      - build/web2/vhost:/etc/nginx/vhost.d
+      - ./build/web2/cert:/etc/nginx/certs:rw
+      - ./build/web2/html:/usr/share/nginx/html
+      - ./build/web2/vhost:/etc/nginx/vhost.d
     depends_on:
       - nginx-proxy
     # ネットワークの設定
