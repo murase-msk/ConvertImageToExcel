@@ -27,31 +27,20 @@ http {
 
     #gzip  on;
 
-    upstream uwsgi {
-        server app:3031;
+    #upstream uwsgi {
+    #    server app:3031;
+    #}
+
+  server{
+    listen 80;
+    server_name textdetector.murase-msk.work;
+    location / {
+      proxy_request_buffering off;
+      include uwsgi_params;
+      uwsgi_pass app:3031;
     }
-
-    # httpはhttpsへ転送する
-    server {
-        server_name textdetector.murase-msk.work;
-        listen 80;
-        return 301 https://$host$request_uri;
+    location ^~ /.well-known/acme-challenge/ {
+      root /usr/share/nginx/challenge;
     }
-    # https設定
-    server {
-        server_name textdetector.murase-msk.work;
-        listen  443;
-        # ssl on;
-        # ssl_protocols  TLSv1.2 TLSv1.3;
-        ssl_certificate     /etc/letsencrypt/live/textdetector.murase-msk.work/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/textdetector.murase-msk.work/privkey.pem;
-
-        charset utf-8;
-
-        location / {
-            include uwsgi_params;
-            uwsgi_pass uwsgi;
-        }
-
-    }
+  }
 }

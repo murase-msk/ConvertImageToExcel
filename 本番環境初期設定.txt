@@ -46,14 +46,6 @@ apt-get update
 apt-get install -y certbot python3-certbot-nginx
 certbot certonly --agree-tos --standalone -d textdetector.murase-msk.work -m yourMailAddress@xxx.com -n
 
- docker run --rm \  
-  -p 443:443 -p 80:80 --name letsencrypt \
-  -v "/etc/letsencrypt:/etc/letsencrypt" \
-  -v "/var/lib/letsencrypt:/var/lib/letsencrypt" \
-  certbot/certbot certonly -n \
-  -m "YOUR_EMAIL" \
-  -d example.com \
-  --standalone --agree-tos
 
 # ホストOS側でcron設定
 sudo crontab -u root -e

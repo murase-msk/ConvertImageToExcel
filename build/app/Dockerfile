@@ -14,6 +14,9 @@ WORKDIR $project_dir
 #port
 # EXPOSE 3031
 
+#環境変数設定
+ENV PORT=80
+ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update
 # upgrade pip
