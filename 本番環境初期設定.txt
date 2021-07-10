@@ -33,21 +33,8 @@ sudo git clone https://github.com/murase-msk/ConvertImageToExcel.git /workspace/
 // build/web/nginx.conf 作成
 //
 # docker-compose実行
-docker-compose up -d --build
-
-#　ssl設定
-ngnixコンテナでcertbot実行
-apt-get update
-apt-get install -y certbot python3-certbot-nginx
-certbot certonly --agree-tos --standalone -d textdetector.murase-msk.work -m yourMailAddress@xxx.com -n
-
-
-# ホストOS側でcron設定
-sudo crontab -u root -e
-# 毎月1日の深夜4:00に証明書を更新
-00 04 01 * * docker-compose exec web certbot renew
-# 毎月1日の深夜4:05にdocker-composeリスタート
-05 04 01 * * docker-compose restart
+docker-compose -f /workspace/ConvertImageToExcel/docker-compose_production.yml up -d
+docker-compose -f /workspace/ConvertImageToExcel/docker-compose.yml up -d
 
 
 # Flask DB初期設定

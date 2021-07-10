@@ -54,20 +54,20 @@ services:
     depends_on:
       - letsencrypt-nginx  
 
-#  db:
-#    container_name: flask2_db
-#    image: mysql:5.7
-#    # 環境変数読み込み
-#    env_file:
-#      - ./secret/.env
-#    environment:
-#      TZ: 'Asia/Tokyo'
-#    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-#    volumes:
-#      - db_data:/var/lib/mysql
-#      - db_sql:/docker-entrypoint-initdb.d
-#    ports:
-#      - 3306:3306
+ db:
+   container_name: flask2_db
+   image: mysql:5.7
+   # 環境変数読み込み
+   env_file:
+     - ./secret/.env
+   environment:
+     TZ: 'Asia/Tokyo'
+   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+   volumes:
+     - db_data:/var/lib/mysql
+     - db_sql:/docker-entrypoint-initdb.d
+   ports:
+     - 3306:3306
 
   app:
     container_name: flask2
@@ -81,8 +81,8 @@ services:
     ports: 
       - "3031:3031" # uwsgi
     # リンク
-#    links:
-#      - db
+   links:
+     - db
     # データの永続化
     volumes:
       - ".:/var/www/ConvertImageToExcel"
