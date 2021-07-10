@@ -102,5 +102,5 @@ volumes:
   cert:
   vhost:
   html:
-#  db_data:
-#  db_sql:
+  db_data:
+  db_sql:
