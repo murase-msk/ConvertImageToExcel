@@ -14,16 +14,16 @@ app = Flask(__name__)
 # 参照するフォルダの指定
 app = Flask(__name__, static_folder="assets", template_folder="assets/html")
 
-if os.environ['FLASK_ENV'] == 'development':
-    # ロギング設定
+# ロギング設定
+if os.environ['FLASK_ENV'] == 'development':  # 開発環境
     logging.basicConfig(level=logging.INFO)
     # SQLAlchemyのログ出力
     logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
-
-# # ロギング設定
-handler = StreamHandler()
-app.logger.setLevel(logging.DEBUG)
-app.logger.addHandler(handler)
+else:  # 本番環境
+    # handler = StreamHandler()
+    LOGFILE_NAME = "build/app/DEBUG.log"
+    app.logger.setLevel(logging.ERROR)
+    app.logger.addHandler(LOGFILE_NAME)
 
 # DB設定
 app.config.from_object('config.Config')

@@ -1,8 +1,11 @@
+
+
 /secret/
 __pycache__/
 /build/db/data/*
 /build/db/sql/*
 /assets/img/tmp/*
+!/assets/img/tmp/.gitkeep
 /migrations/*
 /build/web/nginx.conf
 /build/web/etc/*

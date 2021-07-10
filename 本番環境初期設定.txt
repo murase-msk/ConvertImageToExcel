@@ -27,16 +27,8 @@ $ sudo service docker restart
 # 一度ログアウトしないと反映されないため、一旦 exit
 $ exit
 
-
 # github からソースコードダウンロード
 sudo git clone https://github.com/murase-msk/ConvertImageToExcel.git /workspace/ConvertImageToExcel
-cd /workspace
-sudo chmod 777 -R ConvertImageToExcel
-cd ConvertImageToExcel
-/secretフォルダの内容をコピー(RLoginのSCP転送)
-/assets/img/tmpフォルダ作成
-sudo chmod 777 -R ConvertImageToExcel
-
 # docker-compose実行
 docker-compose up -d --build
 

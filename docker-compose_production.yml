@@ -1,12 +1,7 @@
-version: '3'
-
-networks:
-  app-net:
-    driver: bridge
+version: '3.7'
 
 services:
-
-  # enginx proxy?
+  # enginx proxy
   nginx-proxy:
     image: jwilder/nginx-proxy:alpine
     container_name: nginx-proxy
@@ -15,13 +10,10 @@ services:
       - 443:443
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./build/web2/cert:/etc/nginx/certs
-      - ./build/web2/html:/usr/share/nginx/html
+      - cert:/etc/nginx/certs
+      - html:/usr/share/nginx/html
     labels:
       com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
-    # ネットワークの設定
-    networks:
-      - app-net
   
   # lets encrypt
   letsencrypt-nginx:
@@ -29,14 +21,11 @@ services:
     container_name: lets
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./build/web2/cert:/etc/nginx/certs:rw
-      - ./build/web2/html:/usr/share/nginx/html
-      - ./build/web2/vhost:/etc/nginx/vhost.d
+      - cert:/etc/nginx/certs:rw
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
     depends_on:
       - nginx-proxy
-    # ネットワークの設定
-    networks:
-      - app-net
   
   web:
     container_name: flask2_web
@@ -53,7 +42,7 @@ services:
       # nginxのログをホストOSの /tmp/nginx_log に出力する
       - ./build/web/nginx_log:/var/log/nginx
       # challenge用
-      - ./build/web2/html:/usr/share/nginx/challenge
+      - html:/usr/share/nginx/challenge
     # 環境変数読み込み
     env_file:
       - ./secret/.env
@@ -64,9 +53,6 @@ services:
     # 依存関係
     depends_on:
       - letsencrypt-nginx  
-    # ネットワークの設定
-    networks:
-      - app-net
 
   app:
     container_name: flask2
@@ -94,9 +80,6 @@ services:
       - ./secret/.env
     # 起動したままにする
     # tty: true
-    # ネットワークの設定
-    networks:
-      - app-net
   
   db:
     container_name: flask2_db
@@ -112,8 +95,9 @@ services:
       - ./build/db/sql:/docker-entrypoint-initdb.d
     ports:
       - 3306:3306
-    # ネットワークの設定
-    networks:
-      - app-net
 
-
+# ボリュームの永続化
+volumes:
+  cert:
+  vhost:
+  html:
