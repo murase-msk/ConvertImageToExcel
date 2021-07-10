@@ -81,8 +81,8 @@ services:
     ports: 
       - "3031:3031" # uwsgi
     # リンク
-   links:
-     - db
+    links:
+      - db
     # データの永続化
     volumes:
       - ".:/var/www/ConvertImageToExcel"
