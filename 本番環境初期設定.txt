@@ -29,6 +29,9 @@ $ exit
 
 # github からソースコードダウンロード
 sudo git clone https://github.com/murase-msk/ConvertImageToExcel.git /workspace/ConvertImageToExcel
+// secret/.env 作成
+// build/web/nginx.conf 作成
+//
 # docker-compose実行
 docker-compose up -d --build
 
@@ -64,18 +67,4 @@ cd /workspace/ConvertImageToExcel
 docker-compose -f /workspace/ConvertImageToExcel/docker-compose_production.yml up -d
 docker-compose -f /workspace/ConvertImageToExcel/docker-compose.yml up -d
 
-# データ更新
-sudo rm -rf /workspace/ConvertImageToExcel
-sudo git clone https://github.com/murase-msk/ConvertImageToExcel.git /workspace/ConvertImageToExcel
-sudo chmod 777 -R /workspace/ConvertImageToExcel
-/secretフォルダの内容をコピー(RLoginのSCP転送)
-cd /workspace/ConvertImageToExcel
-docker-compose up -d --build
-# Flask DB初期設定
-flask db init
-flask db migrate
-flask db upgrade
-python fixtures/init.py
---------------------------------------------------------------
-github
 
