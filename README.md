@@ -2,6 +2,8 @@
 
 PDFやJPEGから文字認識し、Excelへ変換する
 
+https://textdetector.murase-msk.work/
+
 # 開発環境
 
 - Windows10

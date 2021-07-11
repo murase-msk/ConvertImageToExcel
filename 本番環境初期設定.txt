@@ -37,7 +37,7 @@ docker-compose -f /workspace/ConvertImageToExcel/docker-compose_production.yml u
 docker-compose -f /workspace/ConvertImageToExcel/docker-compose.yml up -d
 
 
-# Flask DB初期設定
+# Flask DB初期設定(appコンテナから)
 # 初期化
 flask db init
 # migrationファイル作成
