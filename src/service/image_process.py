@@ -35,14 +35,10 @@ class ImageProcess:
     def getLabels(self, binaryFile: bytes) -> list[str]:
         """ 保存された画像のファイルパス(filePath)からラベルを取得
         """
-        #
+        ##################################################
         # Google Vision API
-        #
-        # Instantiates a client
         client = vision.ImageAnnotatorClient()
-        # The name of the image file to annotate
         # file_name = os.path.abspath(filePath)
-        # Loads the image into memory
         # with io.open(file_name, 'rb') as image_file:
         #     content = image_file.read()
         image = vision.Image(content=binaryFile)

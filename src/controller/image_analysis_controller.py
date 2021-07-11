@@ -15,7 +15,6 @@ import base64
 import json
 import datetime
 from src.model.settingModel import Setting
-from database import db
 
 
 class ImageAnalysisController(MethodView):
@@ -143,30 +142,33 @@ class ImageAnalysisController(MethodView):
         """ BASE64エンコードされたPDFファイルと検出したい文字範囲を受け取って文字認識して返す
         """
 
-        # 本日の使用回数
-        todayUsingNum: int = int(Setting.query.filter_by(setting_name="TodayUsingNum").first().setting_value)
-        # 最終更新日
-        lastUpdate: datetime = Setting.query.filter_by(setting_name="TodayUsingNum").first().updated_at
-        # 1日あたりの上限回数
-        maxDailyUsingNum: int = int(Setting.query.filter_by(setting_name="MaxDailyUsingNum").first().setting_value)
+        # # 本日の使用回数
+        # todayUsingNum: int = int(Setting.query.filter_by(setting_name="TodayUsingNum").first().setting_value)
+        # # 最終更新日
+        # lastUpdate: datetime = Setting.query.filter_by(setting_name="TodayUsingNum").first().updated_at
+        # # 1日あたりの上限回数
+        # maxDailyUsingNum: int = int(Setting.query.filter_by(setting_name="MaxDailyUsingNum").first().setting_value)
 
-        if datetime.datetime.strptime(lastUpdate.strftime('%Y/%m/%d'), '%Y/%m/%d') \
-                < datetime.datetime.strptime(datetime.datetime.now().strftime('%Y/%m/%d'), '%Y/%m/%d'):
-            # 本日の使用回数をリセットする
-            todayUsingNumData: Setting = db.session.query(Setting).filter_by(setting_name='TodayUsingNum').first()
-            todayUsingNum = 0
-            todayUsingNumData.setting_value = str(todayUsingNum)
-            db.session.add(todayUsingNumData)
-            db.session.commit()
-        if todayUsingNum >= maxDailyUsingNum:
-            return jsonify({'result': ["本日の使用回数が上限に達しました"]})
-        else:
-            # 本日の使用回数を1増やす
-            todayUsingNumData: Setting = db.session.query(Setting).filter_by(setting_name='TodayUsingNum').first()
-            todayUsingNumData.setting_value = str(todayUsingNum + 1)
-            db.session.add(todayUsingNumData)
-            db.session.commit()
+        # if datetime.datetime.strptime(lastUpdate.strftime('%Y/%m/%d'), '%Y/%m/%d') \
+        #         < datetime.datetime.strptime(datetime.datetime.now().strftime('%Y/%m/%d'), '%Y/%m/%d'):
+        #     # 本日の使用回数をリセットする
+        #     todayUsingNumData: Setting = db.session.query(Setting).filter_by(setting_name='TodayUsingNum').first()
+        #     todayUsingNum = 0
+        #     todayUsingNumData.setting_value = str(todayUsingNum)
+        #     db.session.add(todayUsingNumData)
+        #     db.session.commit()
+        # if todayUsingNum >= maxDailyUsingNum:
+        #     return jsonify({'result': ["本日の使用回数が上限に達しました"]})
+        # else:
+        #     # 本日の使用回数を1増やす
+        #     todayUsingNumData: Setting = db.session.query(Setting).filter_by(setting_name='TodayUsingNum').first()
+        #     todayUsingNumData.setting_value = str(todayUsingNum + 1)
+        #     db.session.add(todayUsingNumData)
+        #     db.session.commit()
         # ここまでDB操作
+
+        if not Setting.isAvailableApi():
+            return jsonify({'result': ["本日の使用回数が上限に達しました"]})
 
         jsonData = request.get_json()
 
