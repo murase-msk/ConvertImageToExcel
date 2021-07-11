@@ -20,7 +20,7 @@ if os.environ['FLASK_ENV'] == 'development':  # 開発環境
     logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 else:  # 本番環境
     # handler = StreamHandler()
-    LOGFILE_NAME = "build/app/DEBUG.log"
+    LOGFILE_NAME = "build/app/error.log"
     app.logger.setLevel(logging.ERROR)
     app.logger.addHandler(LOGFILE_NAME)
 

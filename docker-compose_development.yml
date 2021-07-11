@@ -1,55 +1,45 @@
 version: '3'
 
-networks:
-  app-net:
-    driver: bridge
-
 services:
-    app:
-        container_name: flask2
-        # Dockerfileの存在するディレクトリを指定
-        build: 
-            context: ./build/app
-            dockerfile: ./Dockerfile_dev
-            args:
-                project_dir: "/var/www/ConvertImageToExcel/"
-        # ポートフォワーディング設定
-        ports: 
-            - "5000:5000"
-        # リンク
-        links:
-          - db
-        # データの永続化
-        volumes:
-            - ".:/var/www/ConvertImageToExcel"
-        # 環境変数の設定
-        environment:
-            TZ: Asia/Tokyo
-            FLASK_ENV: "development"
-            
-        env_file:
-          - ./secret/.env_dev
-        # 起動したままにする
-        tty: true
-        #command : python app.py
-        # ネットワークの設定
-        networks:
-          - app-net
-    db:
-      container_name: flask2_db
-      image: mysql:5.7
-      # 環境変数読み込み
-      env_file:
-        - ./secret/.env_dev
-      environment:
-        TZ: 'Asia/Tokyo'
-      command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-      volumes:
-        - ./build/db/data:/var/lib/mysql
-        - ./build/db/sql:/docker-entrypoint-initdb.d
-      ports:
-        - 3306:3306
-      # ネットワークの設定
-      networks:
-        - app-net
+  app:
+    container_name: flask2
+    # Dockerfileの存在するディレクトリを指定
+    build: 
+      context: ./build/app
+      dockerfile: ./Dockerfile_dev
+      args:
+        project_dir: "/var/www/ConvertImageToExcel/"
+    # ポートフォワーディング設定
+    ports: 
+      - "5000:5000"
+    # リンク
+    links:
+      - db
+    # データの永続化
+    volumes:
+      - ".:/var/www/ConvertImageToExcel"
+    # 環境変数の設定
+    environment:
+      TZ: Asia/Tokyo
+      FLASK_ENV: "development"
         
+    env_file:
+      - ./secret/.env_dev
+    # 起動したままにする
+    tty: true
+
+  db:
+    container_name: flask2_db
+    image: mysql:5.7
+    # 環境変数読み込み
+    env_file:
+      - ./secret/.env_dev
+    environment:
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./build/db/data:/var/lib/mysql
+      - ./build/db/sql:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
+      
