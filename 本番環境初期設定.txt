@@ -46,7 +46,8 @@ flask db migrate
 flask db upgrade
 # 初期データを入れる
 python fixtures/init.py
-
+# MySQL入り方
+mysql -h db -u root -D myDatabase -p
 
 --------------------------------------------------------------
 # 再起動後の設定
@@ -54,4 +55,7 @@ cd /workspace/ConvertImageToExcel
 docker-compose -f /workspace/ConvertImageToExcel/docker-compose_production.yml up -d
 docker-compose -f /workspace/ConvertImageToExcel/docker-compose.yml up -d
 
+--------------------------------------------------------------
+# 全消去
+docker-compose down --rmi all --volumes --remove-orphans
 

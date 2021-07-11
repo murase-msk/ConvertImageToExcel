@@ -59,8 +59,9 @@ services:
     environment:
       TZ: "Asia/Tokyo"
     # 依存関係
-    # depends_on:
-    #   - letsencrypt-nginx  
+    depends_on:
+      - app
+
 
 # ボリュームの永続化
 volumes:
