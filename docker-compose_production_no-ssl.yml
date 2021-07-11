@@ -55,7 +55,7 @@ services:
     env_file:
       - ./secret/.env
     ports:
-      - "4231:80"
+      - "80:80"
     environment:
       TZ: "Asia/Tokyo"
     # 依存関係
