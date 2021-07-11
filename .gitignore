@@ -10,3 +10,4 @@ __pycache__/
 /build/web/nginx.conf
 /build/web/etc/*
 /build/web/var/*
+docker-compose.yml
