@@ -50,7 +50,7 @@ services:
       dockerfile: ./Dockerfile
     volumes:
       # nginxのログをホストOSの /tmp/nginx_log に出力する
-      - ./build/web/nginx_log:/var/log/nginx
+      #- ./build/web/nginx_log:/var/log/nginx
     # 環境変数読み込み
     env_file:
       - ./secret/.env

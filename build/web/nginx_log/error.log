@@ -1,2 +1,0 @@
-2021/07/11 23:45:00 [emerg] 1#1: host not found in upstream "app" in /etc/nginx/nginx.conf:40
-2021/07/11 23:45:36 [warn] 25#25: *1 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000001, client: 172.28.0.1, server: textdetector.murase-msk.work, request: "POST /getLabel/file-upload HTTP/1.1", host: "localhost:4231", referrer: "http://localhost:4231/getLabel"

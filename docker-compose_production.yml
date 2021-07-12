@@ -76,7 +76,7 @@ services:
       dockerfile: ./Dockerfile
     volumes:
       # nginxのログをホストOSの /tmp/nginx_log に出力する
-      - ./build/web/nginx_log:/var/log/nginx
+      #- ./build/web/nginx_log:/var/log/nginx
       # challenge用
       - html:/usr/share/nginx/challenge
     # 環境変数読み込み

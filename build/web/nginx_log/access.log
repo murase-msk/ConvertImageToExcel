@@ -1,4 +1,0 @@
-172.28.0.1 - - [11/Jul/2021:23:45:31 +0900] "GET / HTTP/1.1" 200 850 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" "-"
-172.28.0.1 - - [11/Jul/2021:23:45:31 +0900] "GET /favicon.ico HTTP/1.1" 404 232 "http://localhost:4231/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" "-"
-172.28.0.1 - - [11/Jul/2021:23:45:33 +0900] "GET /getLabel HTTP/1.1" 200 614 "http://localhost:4231/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" "-"
-172.28.0.1 - - [11/Jul/2021:23:45:37 +0900] "POST /getLabel/file-upload HTTP/1.1" 200 196 "http://localhost:4231/getLabel" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" "-"
