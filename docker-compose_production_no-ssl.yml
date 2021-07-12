@@ -47,7 +47,7 @@ services:
     container_name: flask2_web
     build: 
       context: ./build/web
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile_no-ssl
     #volumes:
       # nginxのログをホストOSの /tmp/nginx_log に出力する
       #- ./build/web/nginx_log:/var/log/nginx
