@@ -60,4 +60,9 @@ docker-compose -f /workspace/ConvertImageToExcel/docker-compose.yml up -d
 --------------------------------------------------------------
 # 全消去
 docker-compose down --rmi all --volumes --remove-orphans
+--------------------------------------------------------------
+ログの見方
+uWSGI　appコンテナから　/var/log/uwsgi.log (uwsgi.iniファイルに記載)
+nginx　webコンテナから　/var/log/nginx/error.log (nginx.confに記載)
+
 

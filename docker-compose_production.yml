@@ -53,9 +53,6 @@ services:
     # ポートフォワーディング設定
     ports: 
       - "3031:3031" # uwsgi
-    # リンク
-    links:
-      - db
     # データの永続化
     volumes:
       - ".:/var/www/ConvertImageToExcel"
@@ -66,8 +63,10 @@ services:
     #ファイルから環境変数設定
     env_file:
       - ./secret/.env
-    # 起動したままにする
-    # tty: true
+    # 依存関係
+    depends_on:
+      - db
+
 
   web:
     container_name: flask2_web
@@ -75,6 +74,7 @@ services:
       context: ./build/web
       dockerfile: ./Dockerfile
     volumes:
+      ./build/web/nginx.conf_production:/etc/nginx/nginx.conf
       # nginxのログをホストOSの /tmp/nginx_log に出力する
       #- ./build/web/nginx_log:/var/log/nginx
       # challenge用
@@ -88,7 +88,8 @@ services:
       TZ: "Asia/Tokyo"
     # 依存関係
     depends_on:
-      - letsencrypt-nginx  
+      - letsencrypt-nginx
+      - app
 
 # ボリュームの永続化
 volumes:
