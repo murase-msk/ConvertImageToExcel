@@ -67,16 +67,14 @@ services:
     depends_on:
       - db
 
-
   web:
     container_name: flask2_web
     build: 
       context: ./build/web
       dockerfile: ./Dockerfile
     volumes:
-      ./build/web/nginx.conf_production:/etc/nginx/nginx.conf
-      # nginxのログをホストOSの /tmp/nginx_log に出力する
-      #- ./build/web/nginx_log:/var/log/nginx
+      # nginx設定ファイル
+      - ./build/web/nginx.conf_production:/etc/nginx/nginx.conf
       # challenge用
       - html:/usr/share/nginx/challenge
     # 環境変数読み込み
