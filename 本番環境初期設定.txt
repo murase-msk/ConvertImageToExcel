@@ -63,6 +63,7 @@ docker-compose down --rmi all --volumes --remove-orphans
 --------------------------------------------------------------
 ログの見方
 uWSGI　appコンテナから　/var/log/uwsgi.log (uwsgi.iniファイルに記載)
-nginx　webコンテナから　/var/log/nginx/error.log (nginx.confに記載)
+nginx　docker-compose logs web
+//webコンテナから　/var/log/nginx/error.log (nginx.confに記載)
 
 
